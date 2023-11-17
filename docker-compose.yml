@@ -1,0 +1,9 @@
+version: '3.8'
+services:
+  dev:
+    image: mysql:8.0.30
+    environment:
+      MYSQL_ROOT_PASSWORD: ${DOCKER_PASSWORD}
+      MYSQL_DATABASE: ${DOCKER_DATABASE}
+    ports:
+      - ${DOCKER_PORT}:3306
