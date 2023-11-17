@@ -1,5 +1,7 @@
 import { Controller, Get, Render } from '@nestjs/common';
+import { ApiTags } from '@nestjs/swagger';
 
+@ApiTags("Root")
 @Controller()
 export class AppController {
   @Get()
@@ -7,15 +9,4 @@ export class AppController {
     return { message: 'Hello world!' };
   }
 
-  @Get('signup')
-  @Render('signup')
-  signup() {
-    return { errors: [] };
-  }
-
-  @Get('signin')
-  @Render('signin')
-  signin() {
-    return { errors: [] };
-  }
 }

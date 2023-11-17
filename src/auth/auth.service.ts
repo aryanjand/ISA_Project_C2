@@ -1,14 +1,8 @@
-import {
-  HttpException,
-  HttpStatus,
-  Injectable,
-  UnauthorizedException,
-} from '@nestjs/common';
+import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import { User } from '@prisma/client';
 import * as bcrypt from 'bcrypt';
 import { Response } from 'express';
-import { UserSession } from '../common';
+import { UserSession, ValidationException } from '../common';
 import { PrismaService } from '../prisma/prisma.service';
 import { SignInDto, SignUpDto } from './dto';
 
@@ -25,13 +19,21 @@ export class AuthService {
       where: { email: dto.email },
     });
     if (!user) {
-      throw new UnauthorizedException('Invalid credentials');
+      throw new ValidationException(
+        'Invalid credentials',
+        HttpStatus.UNAUTHORIZED,
+      );
     }
 
     const isValid = bcrypt.compareSync(dto.password, user.password);
     if (!isValid) {
-      throw new UnauthorizedException('Invalid credentials');
+      throw new ValidationException(
+        'Invalid credentials',
+        HttpStatus.UNAUTHORIZED,
+      );
     }
+
+    delete user.password;
 
     session.authenticated = true;
     session.user = user;
@@ -39,30 +41,38 @@ export class AuthService {
     return;
   }
 
-  async signUp(dto: SignUpDto) {
+  async signUp(session: UserSession, dto: SignUpDto) {
+    if (dto.password !== dto.confirmPassword) {
+      throw new ValidationException('Passwords do not match');
+    }
+
     try {
-      await this.prisma.user.create({
+      const user = await this.prisma.user.create({
         data: {
           email: dto.email,
           password: bcrypt.hashSync(dto.password, this.saltRounds),
           first_name: dto.firstName,
           last_name: dto.lastName,
+
         },
       });
+
+      delete user.password;
+
+      session.authenticated = true;
+      session.user = user;
+
+      return;
     } catch (err) {
       if (err.code === 'P2002') {
-        throw new HttpException('Credentials taken', HttpStatus.CONFLICT);
+        throw new ValidationException('Credentials taken');
       }
-      throw new HttpException(
-        'Something went wrong',
-        HttpStatus.INTERNAL_SERVER_ERROR,
-      );
+      throw new ValidationException('Something went wrong');
     }
   }
 
   async signOut(session: UserSession, res: Response) {
     res.clearCookie('connect.sid');
-
     session.destroy((err) => {
       if (err) {
         throw new HttpException(err.message, HttpStatus.SERVICE_UNAVAILABLE);
@@ -70,6 +80,4 @@ export class AuthService {
     });
     return res.redirect('/');
   }
-
-
 }
