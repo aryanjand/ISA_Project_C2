@@ -18,7 +18,10 @@ export class SessionExceptionFilter implements ExceptionFilter {
       exception instanceof UnauthorizedException ||
       exception instanceof ForbiddenException
     ) {
-      return response.redirect('/signin');
+      return response.status(exception.getStatus()).json({
+        statusCode: exception.getStatus(),
+        message: exception.getResponse()['message'] || 'Unauthorized access',
+      });
     }
   }
 }

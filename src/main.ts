@@ -7,21 +7,19 @@ import session from 'express-session';
 import helmet from 'helmet';
 import { AppModule } from './app.module';
 import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
+import * as exphbs from 'express-handlebars';
 
 async function bootstrap() {
   const app = await NestFactory.create<NestExpressApplication>(AppModule);
 
-  // Set the view engine
-  app.set('view engine', 'ejs');
-
-  app.useGlobalPipes(new ValidationPipe({ whitelist: true }));
-
   // TODO: set origin to the frontend url once it's deployed.
   app.enableCors({
-    origin: '*',
+    origin: "*",
+    methods: "GET,HEAD,PUT,PATCH,POST,DELETE",
+    credentials: true,
+    preflightContinue: false,
+    optionsSuccessStatus: 204
   });
-
-  app.use(helmet());
 
   app.use(
     session({

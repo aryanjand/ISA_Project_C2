@@ -4,7 +4,7 @@ import * as bcrypt from 'bcrypt';
 import { Response } from 'express';
 import { UserSession, ValidationException } from '../common';
 import { PrismaService } from '../prisma/prisma.service';
-import { SignInDto, SignUpDto } from './dto';
+import { UserDto } from './dto';
 
 @Injectable()
 export class AuthService {
@@ -14,9 +14,9 @@ export class AuthService {
     this.saltRounds = this.config.get('SALT_ROUNDS', 12);
   }
 
-  async signIn(session: UserSession, dto: SignInDto) {
+  async signIn(session: UserSession, dto: UserDto) {
     const user = await this.prisma.user.findUnique({
-      where: { email: dto.email },
+      where: { username: dto.username },
     });
     if (!user) {
       throw new ValidationException(
@@ -41,19 +41,13 @@ export class AuthService {
     return;
   }
 
-  async signUp(session: UserSession, dto: SignUpDto) {
-    if (dto.password !== dto.confirmPassword) {
-      throw new ValidationException('Passwords do not match');
-    }
+  async signUp(session: UserSession, dto: UserDto) {
 
     try {
       const user = await this.prisma.user.create({
         data: {
-          email: dto.email,
+          username: dto.username,
           password: bcrypt.hashSync(dto.password, this.saltRounds),
-          first_name: dto.firstName,
-          last_name: dto.lastName,
-
         },
       });
 
@@ -78,6 +72,6 @@ export class AuthService {
         throw new HttpException(err.message, HttpStatus.SERVICE_UNAVAILABLE);
       }
     });
-    return res.redirect('/');
+    return;
   }
 }

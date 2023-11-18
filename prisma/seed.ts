@@ -4,40 +4,34 @@ const prisma = new PrismaClient();
 
 async function main() {
   const dummy = await prisma.user.upsert({
-    where: { email: 'dummy@mail.com' },
+    where: { username: 'dummyuser' },
     update: {},
     create: {
-      email: 'dummy@mail.com',
-      first_name: 'Dummy',
-      last_name: 'User',
-      password: '$2a$12$KfR9eNC9fxFBviwsjWffaOeuGNw3QJL6ubqg9KfP9gJw/JMMAMf8O',
-    },
-  });
-
-  const oscar = await prisma.user.upsert({
-    where: { email: 'oscar@gmail.com' },
-    update: {},
-    create: {
-      email: 'oscar@mail.com',
-      first_name: 'Oscar',
-      last_name: 'Zhu',
+      username: 'dummyuser',
       password: '$2a$12$KfR9eNC9fxFBviwsjWffaOeuGNw3QJL6ubqg9KfP9gJw/JMMAMf8O',
     },
   });
 
   const aryan = await prisma.user.upsert({
-    where: { email: 'aryan@mail.com' },
+    where: { username: 'aryanjand' },
     update: {},
-
     create: {
-      email: 'aryan@mail.com',
-      first_name: 'Aryan',
-      last_name: 'Rand',
+      username: 'aryanjand',
       password: '$2a$12$KfR9eNC9fxFBviwsjWffaOeuGNw3QJL6ubqg9KfP9gJw/JMMAMf8O',
     },
   });
 
-  console.log({ dummy, oscar, aryan });
+  const brian = await prisma.user.upsert({
+    where: { username: 'briankim' },
+    update: {},
+
+    create: {
+      username: 'briankim',
+      password: '$2a$12$KfR9eNC9fxFBviwsjWffaOeuGNw3QJL6ubqg9KfP9gJw/JMMAMf8O',
+    },
+  });
+
+  console.log({ dummy, brian, aryan });
 }
 
 main()

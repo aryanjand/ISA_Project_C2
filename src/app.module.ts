@@ -5,7 +5,6 @@ import { join } from 'path';
 import { cwd } from 'process';
 import { AppController } from './app.controller';
 import { AuthModule } from './auth/auth.module';
-
 import { NotFoundExceptionFilter } from './common';
 import { HealthModule } from './health/health.module';
 import { PrismaModule } from './prisma/prisma.module';

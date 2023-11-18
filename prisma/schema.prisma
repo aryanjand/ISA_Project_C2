@@ -10,19 +10,13 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-enum Content_Type {
-  COMMENT
-  THREAD
-}
 
 model User {
   id         Int      @id @default(autoincrement())
   created_at DateTime @default(now())
   updated_at DateTime @updatedAt
-
-  first_name      String    @db.VarChar(50)
-  last_name       String    @db.VarChar(50)
-  email           String    @unique @db.VarChar(255)
+  
+  username        String    @unique @db.VarChar(255)
   password        String    @db.VarChar(255)
 
 }
