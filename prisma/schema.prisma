@@ -10,6 +10,10 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+enum UserType {
+  ADMIN
+  USER
+}
 
 model User {
   id         Int      @id @default(autoincrement())
@@ -18,6 +22,15 @@ model User {
   
   username        String    @unique @db.VarChar(255)
   password        String    @db.VarChar(255)
-
+  user_privilege  UserType  @default(USER)
+  api_calls_left  Int       @default(20)
 }
 
+model Image {
+  id         Int      @id @default(autoincrement())
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+
+  user_text  String   @db.VarChar(50)
+  image_url  String   @db.VarChar(255)
+}

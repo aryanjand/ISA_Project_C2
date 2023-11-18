@@ -8,6 +8,8 @@ import { AuthModule } from './auth/auth.module';
 import { NotFoundExceptionFilter } from './common';
 import { HealthModule } from './health/health.module';
 import { PrismaModule } from './prisma/prisma.module';
+import { CloudinaryModule } from './cloudinary/cloudinary.module';
+import { ModelModule } from './model/model.module';
 
 
 @Module({
@@ -20,6 +22,8 @@ import { PrismaModule } from './prisma/prisma.module';
     PrismaModule,
     HealthModule,
     AuthModule,
+    CloudinaryModule,
+    ModelModule
   ],
   controllers: [AppController],
   providers: [

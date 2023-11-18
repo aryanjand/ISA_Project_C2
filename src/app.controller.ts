@@ -6,7 +6,7 @@ import { ApiTags } from '@nestjs/swagger';
 export class AppController {
   @Get()
   root() {
-    return { message: 'Hello world!' };
+    return { message: 'Welcome to PicaWord!' };
   }
 
 }
