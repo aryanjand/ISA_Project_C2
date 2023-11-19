@@ -8,9 +8,8 @@ import {
   Response as Res,
   Session,
 } from '@nestjs/common';
-import {
-  UserSession
-} from '../common';
+import { Response } from 'express';
+import { UserSession } from '../common';
 import { AuthService } from './auth.service';
 import { UserDto } from './dto';
 import { ApiBody, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
@@ -74,10 +73,9 @@ export class AuthController {
   @HttpCode(HttpStatus.OK)
   @ApiOperation({ summary: 'Signing out a user' })
   @ApiResponse({ status: HttpStatus.OK, description: 'User has been successfully signed out.' })
-  @Get('/signout')
-  async signOut() {
-    // await this.authService.signOut(session, res);
-    return { message: "User Signed Out" };
+  @Get('signout')
+  signOut(@Session() session: UserSession, @Res() res: Response) {
+    return this.authService.signOut(session, res);
   }
 }
 
