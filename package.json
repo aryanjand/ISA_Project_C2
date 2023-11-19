@@ -44,6 +44,7 @@
     "cors": "^2.8.5",
     "express-handlebars": "^7.1.2",
     "express-session": "^1.17.3",
+    "get-stream": "^8.0.1",
     "helmet": "^7.0.0",
     "mongodb": "^6.1.0",
     "morgan": "^1.10.0",
