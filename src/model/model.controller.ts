@@ -10,7 +10,7 @@ export class ModelController {
 
   @Get('GenerateStoryWithTokens')
   @ApiQuery({ name: 'description', type: String, description: 'Description of the image' })
-  async generateImage(@Query('description') description: string): Promise<String | ArrayBuffer> {
+  async generateTokensWithStory(@Query('description') description: string): Promise<String | ArrayBuffer> {
     // Assuming your service has a method to generate the image
     const tokens = await this.modelService.identifyTokens(description);
 
@@ -19,5 +19,18 @@ export class ModelController {
     console.log("Story ", sentence)
     // You can return the image data or URL, depending on your needs
     return sentence;
+  }
+
+
+  @Get('GenerateTokens')
+  @ApiQuery({ name: 'description', type: String, description: 'Description of the image' })
+  async generateTokens(@Query('description') description: string): Promise<String | ArrayBuffer> {
+    // Assuming your service has a method to generate the image
+    const tokens = await this.modelService.identifyTokens(description);
+
+    console.log("Tokens form model ", tokens)
+
+    // You can return the image data or URL, depending on your needs
+    return tokens;
   }
 }
