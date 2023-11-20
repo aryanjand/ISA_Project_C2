@@ -42,8 +42,8 @@ async function bootstrap() {
   .setDescription('Your API description')
   .setVersion('1.0')
   .addServer('http://localhost:3000/', 'Local environment')
-  .addServer('https://staging.yourapi.com/', 'Staging')
-  .addServer('https://production.yourapi.com/', 'Production')
+  .addServer('https://dolphin-app-fhiqy.ondigitalocean.app/', 'Staging')
+  .addServer('https://dolphin-app-fhiqy.ondigitalocean.app/', 'Production')
   .addTag('Your API Tag')
   .build();
 
