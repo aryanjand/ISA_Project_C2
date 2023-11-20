@@ -8,12 +8,12 @@ import {
   Response as Res,
   Session,
 } from '@nestjs/common';
-import {
-  UserSession
-} from '../common';
+import { Response } from 'express';
+import { UserSession } from '../common';
 import { AuthService } from './auth.service';
 import { UserDto } from './dto';
 import { ApiBody, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
+import { AuthGuard } from '@nestjs/passport';
 
 @ApiTags('User Authentication')
 @Controller()
@@ -74,10 +74,27 @@ export class AuthController {
   @HttpCode(HttpStatus.OK)
   @ApiOperation({ summary: 'Signing out a user' })
   @ApiResponse({ status: HttpStatus.OK, description: 'User has been successfully signed out.' })
-  @Get('/signout')
-  async signOut() {
-    // await this.authService.signOut(session, res);
-    return { message: "User Signed Out" };
+  @Get('signout')
+  async signOut(@Session() session: UserSession, @Res() res: Response) {
+    await this.authService.signOut(session, res);
+    return { authenticated: false }
+
+  }
+
+  @HttpCode(HttpStatus.OK)
+  @ApiOperation({ summary: 'Check if User Authenticated' })
+  @ApiResponse({ status: HttpStatus.OK, description: 'User has been successfully authenticated' })
+  @Get('status')
+  status(@Session() session: UserSession) {
+    const isLoggedIn = session && session.user && session.authenticated;
+
+    if (isLoggedIn) {
+      // User is logged in
+      return { authenticated: true };
+    } else {
+      // User is not logged in
+      return { authenticated: false };
+    }
   }
 }
 
