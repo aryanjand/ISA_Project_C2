@@ -14,7 +14,8 @@ async function bootstrap() {
 
   // TODO: set origin to the frontend url once it's deployed.
   app.enableCors({
-    origin: "*",
+    origin: true,
+    allowedHeaders: ["Access-Control-Allow-Credentials", "Content-Type"],
     methods: "GET,HEAD,PUT,PATCH,POST,DELETE",
     credentials: true,
     preflightContinue: false,
