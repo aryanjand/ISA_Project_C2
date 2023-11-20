@@ -1,6 +1,6 @@
 // open-ai.service.ts
 import { Injectable, Global } from '@nestjs/common';
-const endpoint = 'https://api.openai.com/v1/engines/gpt-3.5-turbo/completions';
+const endpoint = 'https://api.openai.com/v1/engines/davinci/completions';
 
 @Global()
 @Injectable()
