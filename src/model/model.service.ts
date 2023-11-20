@@ -2,25 +2,27 @@ import { Injectable } from '@nestjs/common';
 
 @Injectable()
 export class ModelService {
-  async generateImage(data: String): Promise<String | ArrayBuffer> {
+  async identifyTokens(data: String): Promise<String> {
+    console.log("JSON OBJ to the API ", JSON.stringify({ text: data }));
+
     const response = await fetch(
-      'https://api-inference.huggingface.co/models/stabilityai/stable-diffusion-xl-base-1.0',
+      'https://seahorse-app-pq5ct.ondigitalocean.app/',
       {
-        headers: {
-          Authorization: "Bearer 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",
-        },
         method: 'POST',
-        body: JSON.stringify(data),
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          text: data,
+        }),
       }
     );
+        // Check the correct spelling of "json()" in the following line
+      const responseData = await response.json();
+      console.log("Response form model line 22 ", responseData)
 
-    const result = await response.blob();
-    console.log("Response from api ", result);
+      let sentence = responseData.map(item => item.word).join(' ');
 
-    return "";
+    return sentence;
   }
-    
-
-  
-
 }

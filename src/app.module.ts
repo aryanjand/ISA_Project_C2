@@ -10,6 +10,8 @@ import { HealthModule } from './health/health.module';
 import { PrismaModule } from './prisma/prisma.module';
 import { CloudinaryModule } from './cloudinary/cloudinary.module';
 import { ModelModule } from './model/model.module';
+import { OpenAiController } from './open-ai/open-ai.controller';
+import { OpenAiService } from './open-ai/open-ai.service';
 
 
 @Module({
@@ -25,12 +27,13 @@ import { ModelModule } from './model/model.module';
     CloudinaryModule,
     ModelModule
   ],
-  controllers: [AppController],
+  controllers: [AppController, OpenAiController],
   providers: [
     {
       provide: 'APP_FILTER',
       useClass: NotFoundExceptionFilter,
     },
+    OpenAiService,
   ],
 })
 export class AppModule {}

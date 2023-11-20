@@ -1,19 +1,23 @@
 import { Controller, Get, Query } from '@nestjs/common';
-import { ModelService } from './model.service'; // Import your service
 import { ApiQuery } from '@nestjs/swagger';
+import { ModelService } from './model.service';
+import { OpenAiService } from 'src/open-ai/open-ai.service';
 
 @Controller('model')
 export class ModelController {
+  constructor(private readonly modelService: ModelService, private readonly openaiService: OpenAiService,) {}
 
-  constructor(private readonly modelService: ModelService) {}
 
-  @Get('generateImage')
+  @Get('GenerateStoryWithTokens')
   @ApiQuery({ name: 'description', type: String, description: 'Description of the image' })
   async generateImage(@Query('description') description: string): Promise<String | ArrayBuffer> {
     // Assuming your service has a method to generate the image
-    const imageData = await this.modelService.generateImage(description);
+    const tokens = await this.modelService.identifyTokens(description);
 
+    console.log("Tokens form model ", tokens)
+    const sentence = await this.openaiService.openAiResponse(tokens);
+    console.log("Story ", sentence)
     // You can return the image data or URL, depending on your needs
-    return imageData;
+    return sentence;
   }
 }
