@@ -72,6 +72,6 @@ export class AuthService {
         throw new HttpException(err.message, HttpStatus.SERVICE_UNAVAILABLE);
       }
     });
-    return {message: "User Singed Out"};
+    return;
   }
 }
