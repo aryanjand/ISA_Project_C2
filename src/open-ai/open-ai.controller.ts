@@ -12,7 +12,7 @@ export class OpenAiController {
     type: String,
     description: 'Give words to make a story',
   })
-  async generateImage(@Query('Prompt') prompt: string): Promise<String> {
+  async generateStroy(@Query('Prompt') prompt: string): Promise<String> {
     // Assuming your service has a method to generate the image
     const response = await this.openaiService.openAiResponse(prompt);
 
