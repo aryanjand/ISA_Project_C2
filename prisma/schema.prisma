@@ -36,5 +36,5 @@ model Story {
   user_id      Int
   user         User     @relation(fields: [user_id], references: [id], onDelete: Cascade)
   user_text    String   @db.VarChar(50)
-  story_text   String   @db.VarChar(1000)
+  story_text   String   @db.LongText
 }

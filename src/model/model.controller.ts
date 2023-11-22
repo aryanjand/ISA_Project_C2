@@ -27,8 +27,14 @@ export class ModelController {
     console.log('Tokens form model ', tokens);
     const sentence = await this.openaiService.openAiResponse(tokens);
     console.log('Story ', sentence);
+    console.log('Session ', session);
+    console.log('Description ', description);
+    console.log('User ID ', session.user.id);
 
-    // await this.modelService.crateStory(session.user.id, name, sentence);
+
+
+
+    await this.modelService.crateStory(session.user.id, description, sentence);
 
     return sentence;
   }
