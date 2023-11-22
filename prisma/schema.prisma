@@ -24,13 +24,17 @@ model User {
   password        String    @db.VarChar(255)
   user_privilege  UserType  @default(USER)
   api_calls_left  Int       @default(20)
+
+  stroy           Story[]
 }
 
-model Image {
+model Story {
   id         Int      @id @default(autoincrement())
   created_at DateTime @default(now())
   updated_at DateTime @updatedAt
 
-  user_text  String   @db.VarChar(50)
-  image_url  String   @db.VarChar(255)
+  user_id      Int
+  user         User     @relation(fields: [user_id], references: [id], onDelete: Cascade)
+  user_text    String   @db.VarChar(50)
+  story_text   String   @db.VarChar(1000)
 }

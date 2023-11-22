@@ -42,7 +42,6 @@ export class AuthService {
   }
 
   async signUp(session: UserSession, dto: UserDto) {
-
     try {
       const user = await this.prisma.user.create({
         data: {

@@ -12,7 +12,10 @@ import { CloudinaryModule } from './cloudinary/cloudinary.module';
 import { ModelModule } from './model/model.module';
 import { OpenAiController } from './open-ai/open-ai.controller';
 import { OpenAiService } from './open-ai/open-ai.service';
-
+import { UserService } from './user/user.service';
+import { UserController } from './user/user.controller';
+import { UserModule } from './user/user.module';
+import { StoryModule } from './story/story.module';
 
 @Module({
   imports: [
@@ -25,15 +28,18 @@ import { OpenAiService } from './open-ai/open-ai.service';
     HealthModule,
     AuthModule,
     CloudinaryModule,
-    ModelModule
+    ModelModule,
+    UserModule,
+    StoryModule,
   ],
-  controllers: [AppController, OpenAiController],
+  controllers: [AppController, OpenAiController, UserController],
   providers: [
     {
       provide: 'APP_FILTER',
       useClass: NotFoundExceptionFilter,
     },
     OpenAiService,
+    UserService,
   ],
 })
 export class AppModule {}

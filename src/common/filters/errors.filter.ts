@@ -16,7 +16,10 @@ export class ErrorsExceptionFilter implements ExceptionFilter {
 
     response.status(exception.getStatus());
 
-    const errorMessage = exception.getResponse() instanceof Object ? exception.getResponse()['message'] : exception.getResponse();
+    const errorMessage =
+      exception.getResponse() instanceof Object
+        ? exception.getResponse()['message']
+        : exception.getResponse();
 
     return response.json({
       statusCode: exception.getStatus(),

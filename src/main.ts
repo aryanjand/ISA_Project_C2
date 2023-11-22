@@ -15,11 +15,11 @@ async function bootstrap() {
   // TODO: set origin to the frontend url once it's deployed.
   app.enableCors({
     origin: true,
-    allowedHeaders: ["Access-Control-Allow-Credentials", "Content-Type"],
-    methods: "GET,HEAD,PUT,PATCH,POST,DELETE",
+    allowedHeaders: ['Access-Control-Allow-Credentials', 'Content-Type'],
+    methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
     credentials: true,
     preflightContinue: false,
-    optionsSuccessStatus: 204
+    optionsSuccessStatus: 204,
   });
 
   app.use(
@@ -36,20 +36,18 @@ async function bootstrap() {
     }),
   );
 
-
   const options = new DocumentBuilder()
-  .setTitle('Your API Title')
-  .setDescription('Your API description')
-  .setVersion('1.0')
-  .addServer('http://localhost:3000/', 'Local environment')
-  .addServer('https://dolphin-app-fhiqy.ondigitalocean.app/', 'Staging')
-  .addServer('https://dolphin-app-fhiqy.ondigitalocean.app/', 'Production')
-  .addTag('Your API Tag')
-  .build();
+    .setTitle('Your API Title')
+    .setDescription('Your API description')
+    .setVersion('1.0')
+    .addServer('http://localhost:3000/', 'Local environment')
+    .addServer('https://dolphin-app-fhiqy.ondigitalocean.app/', 'Staging')
+    .addServer('https://dolphin-app-fhiqy.ondigitalocean.app/', 'Production')
+    .addTag('Your API Tag')
+    .build();
 
   const document = SwaggerModule.createDocument(app, options);
   SwaggerModule.setup('api-docs', app, document);
-
 
   await app.listen(process.env.PORT || 3000);
 
