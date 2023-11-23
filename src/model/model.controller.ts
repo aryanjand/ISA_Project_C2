@@ -24,15 +24,7 @@ export class ModelController {
     // Assuming your service has a method to generate the image
     const tokens = await this.modelService.identifyTokens(description);
 
-    console.log('Tokens form model ', tokens);
     const sentence = await this.openaiService.openAiResponse(tokens);
-    console.log('Story ', sentence);
-    console.log('Session ', session);
-    console.log('Description ', description);
-    console.log('User ID ', session.user.id);
-
-
-
 
     await this.modelService.crateStory(session.user.id, description, sentence);
 
@@ -50,8 +42,6 @@ export class ModelController {
   ): Promise<String | ArrayBuffer> {
     // Assuming your service has a method to generate the image
     const tokens = await this.modelService.identifyTokens(description);
-
-    console.log('Tokens form model ', tokens);
 
     // You can return the image data or URL, depending on your needs
     return tokens;
