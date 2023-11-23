@@ -64,16 +64,16 @@ export class ModelService {
     data.forEach((entity) => {
       switch (entity.entity) {
         case 'PERSON':
-          context.person = this.personFormatter(entity.word);
+          context.person += this.personFormatter(entity.word);
           break;
         case 'LOCATION':
-          context.location = this.locationFormatter(entity.word);
+          context.location += this.locationFormatter(entity.word);
           break;
         case 'ORGANIZATION':
-          context.organization = this.organizationFormatter(entity.word);
+          context.organization += this.organizationFormatter(entity.word);
           break;
         case 'MISCELLANEOUS':
-          context.miscellaneous = this.miscellaneousFormatter(entity.word);
+          context.miscellaneous += this.miscellaneousFormatter(entity.word);
           break;
       }
     });
