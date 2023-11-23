@@ -45,9 +45,9 @@ export class ModelService {
       const formattedEntities = responseData.reduce((acc, entity) => {
         const entityType = entityTypeMap[entity.entity];
         if (!acc[entityType]) {
-          acc[entityType] = [];
+          acc[entityType] = '';
         }
-        acc[entityType].push(entity.word);
+        acc[entityType] += (acc[entityType] ? ' ' : '') + entity.word;
         return acc;
       }, {});
 
