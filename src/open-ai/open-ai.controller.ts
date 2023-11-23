@@ -1,11 +1,14 @@
-import { Controller, Get, Query } from '@nestjs/common';
+import { Controller, Get, Query, UseGuards } from '@nestjs/common';
 import { ApiQuery } from '@nestjs/swagger';
 import { OpenAiService } from './open-ai.service';
+import { AuthGuard } from 'src/common/guards';
+
 
 @Controller('open-ai')
 export class OpenAiController {
   constructor(private readonly openaiService: OpenAiService) {}
 
+  @UseGuards(AuthGuard)
   @Get('GenerateStory')
   @ApiQuery({
     name: 'Prompt',
