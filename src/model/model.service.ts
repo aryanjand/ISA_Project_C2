@@ -2,28 +2,12 @@ import { Injectable, InternalServerErrorException } from '@nestjs/common';
 import fetch from 'node-fetch';
 import { ValidationException } from '../common';
 import { PrismaService } from '../prisma/prisma.service';
-type EntityData = {
-  entity: string;
-  score: number;
-  index: number;
-  word: string;
-  start: null; // You can replace null with the appropriate type if needed
-  end: null;   // You can replace null with the appropriate type if needed
-};
-
-type Context = {
-  person: string;
-  location?: string;
-  organization?: string;
-  miscellaneous?: string;
-}
-
 
 @Injectable()
 export class ModelService {
   constructor(private prisma: PrismaService) {}
 
-  async identifyTokens(data: String): Promise<string> {
+  async identifyTokens(data: string): Promise<any[]> {
     try {
       console.log('JSON OBJ to the API ', JSON.stringify({ text: data }));
 
@@ -44,56 +28,43 @@ export class ModelService {
         throw new InternalServerErrorException('Failed to fetch data from the API');
       }
 
-      const responseData:EntityData[] = await response.json();
-      const context:Context = this.formatContext(responseData);
+      const responseData = await response.json();
+      console.log('Response from model line 22 ', responseData);
 
-      return JSON.stringify(context);
+      const entityTypeMap = {
+        'B-PER': 'Person',
+        'I-PER': 'Person',
+        'B-ORG': 'Organization',
+        'I-ORG': 'Organization',
+        'B-LOC': 'Location',
+        'I-LOC': 'Location',
+        'B-MISC': 'Miscellaneous',
+        'I-MISC': 'Miscellaneous',
+      };
+
+      const formattedEntities: any[] = [];
+
+      let currentEntity = { type: '', value: '' };
+      responseData.forEach((entity: any) => {
+        const entityType = entityTypeMap[entity.entity];
+        if (currentEntity.type !== entityType) {
+          if (currentEntity.type !== '') {
+            formattedEntities.push(currentEntity);
+          }
+          currentEntity = { type: entityType, value: entity.word };
+        } else if (entity.word.includes('#')) {
+          currentEntity.value += `${entity.word.replace(/#+/g, '')}`;
+        } else {
+          currentEntity.value += ` ${entity.word}`;
+        }
+      });
+
+      formattedEntities.push(currentEntity); // Push the last entity
+
+      return formattedEntities;
     } catch (error) {
       throw new InternalServerErrorException(error.message);
     }
-  }
-
-  formatContext(data: EntityData[]) {
-    let context:Context = {
-      person: '',
-      location: '',
-      organization: '',
-      miscellaneous: '',
-    };
-
-    data.forEach((entity) => {
-      switch (entity.entity) {
-        case 'PERSON':
-          context.person += this.personFormatter(entity.word);
-          break;
-        case 'LOCATION':
-          context.location += this.locationFormatter(entity.word);
-          break;
-        case 'ORGANIZATION':
-          context.organization += this.organizationFormatter(entity.word);
-          break;
-        case 'MISCELLANEOUS':
-          context.miscellaneous += this.miscellaneousFormatter(entity.word);
-          break;
-      }
-    });
-    return context;
-  }
-
-  personFormatter = (person: string) => {
-    return person.replace(/#+/g, '');
-  }
-  
-  locationFormatter = (location: string) => {
-    return location.replace(/#+/g, '');
-  }
-  
-  organizationFormatter = (organization: string) => {
-    return organization.replace(/#+/g, ''); 
-  }
-  
-  miscellaneousFormatter = (miscellaneous: string) => {
-    return miscellaneous.replace(/#+/g, '');
   }
 
   async crateStory(user_id: number, user_text: string, story: string) {
