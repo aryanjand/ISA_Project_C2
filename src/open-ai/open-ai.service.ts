@@ -11,8 +11,6 @@ export class OpenAiService {
         apiKey: process.env.OPENAI_API_KEY,
       });
 
-      console.log(openai);
-
       const response = await openai.chat.completions.create({
         model: 'gpt-3.5-turbo',
         messages: [
@@ -29,7 +27,6 @@ export class OpenAiService {
         max_tokens: 200,
       });
       const generatedText = response.choices[0].message.content.trim();
-      console.log('Generated Text:', generatedText);
       return generatedText;
     } catch (error) {
       console.error('Error in openAiResponse:', error);

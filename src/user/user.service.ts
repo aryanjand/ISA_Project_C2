@@ -21,4 +21,20 @@ export class UserService {
       throw new ValidationException('Something went wrong');
     }
   }
+
+  async getStoryForUser(user: User) {
+    try {
+      const story = await this.prisma.story.findMany({
+        where: {
+          user_id: user.id,
+        },
+      });
+      return story;
+    } catch (err) {
+      if (err.code === 'P2002') {
+        throw new ValidationException('Credentials taken');
+      }
+      throw new ValidationException('Something went wrong');
+    }
+  }
 }

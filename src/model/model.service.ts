@@ -2,12 +2,13 @@ import { Injectable, InternalServerErrorException } from '@nestjs/common';
 import fetch from 'node-fetch';
 import { ValidationException } from '../common';
 import { PrismaService } from '../prisma/prisma.service';
+import { Entity } from './types';
 
 @Injectable()
 export class ModelService {
   constructor(private prisma: PrismaService) {}
 
-  async identifyTokens(data: string): Promise<any[]> {
+  async identifyTokens(data: string): Promise<Entity[]> {
     try {
       console.log('JSON OBJ to the API ', JSON.stringify({ text: data }));
 
@@ -25,7 +26,9 @@ export class ModelService {
       );
 
       if (!response.ok) {
-        throw new InternalServerErrorException('Failed to fetch data from the API');
+        throw new InternalServerErrorException(
+          'Failed to fetch data from the API',
+        );
       }
 
       const responseData = await response.json();
@@ -42,9 +45,9 @@ export class ModelService {
         'I-MISC': 'Miscellaneous',
       };
 
-      const formattedEntities: any[] = [];
+      const formattedEntities: Entity[] = [];
 
-      let currentEntity = { type: '', value: '' };
+      let currentEntity: Entity = { type: '', value: '' };
       responseData.forEach((entity: any) => {
         const entityType = entityTypeMap[entity.entity];
         if (currentEntity.type !== entityType) {
