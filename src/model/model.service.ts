@@ -2,7 +2,6 @@ import { Injectable, InternalServerErrorException } from '@nestjs/common';
 import fetch from 'node-fetch';
 import { ValidationException } from '../common';
 import { PrismaService } from '../prisma/prisma.service';
-import { type } from 'os';
 type EntityData = {
   entity: string;
   score: number;
@@ -24,7 +23,7 @@ type Context = {
 export class ModelService {
   constructor(private prisma: PrismaService) {}
 
-  async identifyTokens(data: String): Promise<String> {
+  async identifyTokens(data: String): Promise<string> {
     try {
       console.log('JSON OBJ to the API ', JSON.stringify({ text: data }));
 
