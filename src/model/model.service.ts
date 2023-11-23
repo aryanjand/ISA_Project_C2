@@ -81,43 +81,19 @@ export class ModelService {
   }
 
   personFormatter = (person: string) => {
-    let name: string = "";
-    for (let i = 0; i < person.length; i++) {
-      if (person[i] !== "#") {
-        name += person[i];
-      }
-    }
-    return name;
+    return person.replace(/#+/g, '');
   }
-
+  
   locationFormatter = (location: string) => {
-    let name: string = "";
-    for (let i = 0; i < location.length; i++) {
-      if (location[i] !== "#") {
-        name += location[i];
-      }
-    }
-    return name;
-  }  
-
-  organizationFormatter = (organization: string) => {
-    let name: string = "";
-    for (let i = 0; i < organization.length; i++) {
-      if (organization[i] !== "#") {
-        name += organization[i];
-      }
-    }
-    return name;
+    return location.replace(/#+/g, '');
   }
-
+  
+  organizationFormatter = (organization: string) => {
+    return organization.replace(/#+/g, ''); 
+  }
+  
   miscellaneousFormatter = (miscellaneous: string) => {
-    let name: string = "";
-    for (let i = 0; i < miscellaneous.length; i++) {
-      if (miscellaneous[i] !== "#") {
-        name += miscellaneous[i];
-      }
-    }
-    return name;
+    return miscellaneous.replace(/#+/g, '');
   }
 
   async crateStory(user_id: number, user_text: string, story: string) {
