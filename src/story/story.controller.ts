@@ -1,6 +1,12 @@
-import { Controller, ForbiddenException, Get, Session } from '@nestjs/common';
+import {
+  Controller,
+  ForbiddenException,
+  Get,
+  Session,
+  UseGuards,
+} from '@nestjs/common';
 import { ApiForbiddenResponse, ApiResponse, ApiTags } from '@nestjs/swagger';
-import { UserSession } from '../common';
+import { AuthGuard, UserSession } from '../common';
 import { Story } from '@prisma/client';
 
 import { StoryService } from './story.service';
@@ -11,11 +17,12 @@ import { StoryDto } from './dto';
 export class StoryController {
   constructor(private readonly storyService: StoryService) {}
 
+  @UseGuards(AuthGuard)
   @Get('allStories')
   @ApiResponse({
     status: 200,
     description: 'List of all stories',
-    type: StoryDto, // Replace 'StoryDto' with your actual DTO for Story
+    type: StoryDto,
   })
   @ApiForbiddenResponse({ description: 'Forbidden' })
   async getAllStories(@Session() session: UserSession): Promise<Story[]> {

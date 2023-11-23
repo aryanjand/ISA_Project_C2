@@ -5,6 +5,7 @@ import {
   HttpCode,
   HttpStatus,
   Post,
+  Request as Req,
   Response as Res,
   Session,
 } from '@nestjs/common';
@@ -32,17 +33,25 @@ export class AuthController {
     description: 'User Object loaded in Session Object',
   })
   @Post('signin')
-  async signIn(@Session() session: UserSession, @Body() dto: UserDto) {
+  async signIn(
+    @Session() session: UserSession,
+    @Body() dto: UserDto,
+    @Res() response: Response,
+  ) {
     try {
       // Call your authentication service to sign in the user
-      await this.authService.signIn(session, dto);
+      await this.authService.signIn(session, dto, response);
 
-      // Return the session data in the response
-      return { session: session };
+      console.log('After the await');
     } catch (error) {
       // Handle authentication errors
-      return { error: 'Authentication failed.' };
+      console.error('Authentication failed:', error);
+      response.status(401).json({ error: 'Authentication failed.' }); // Set an appropriate HTTP status code
+      return; // Return to exit the function
     }
+    console.log('After try and catch ', session);
+    // Return the session data in the response
+    response.json({ session: session });
   }
 
   @HttpCode(HttpStatus.CREATED)
@@ -57,17 +66,25 @@ export class AuthController {
     description: 'User Object loaded in Session Object',
   })
   @Post('signup')
-  async signUp(@Session() session: UserSession, @Body() dto: UserDto) {
+  async signUp(
+    @Session() session: UserSession,
+    @Body() dto: UserDto,
+    @Res() response: Response,
+  ) {
     try {
       // Call your authentication service to sign in the user
-      await this.authService.signUp(session, dto);
+      await this.authService.signUp(session, dto, response);
 
-      // Return the session data in the response
-      return { session: session };
+      console.log('After the await');
     } catch (error) {
       // Handle authentication errors
-      return { error: 'Authentication failed.' };
+      console.error('Authentication failed:', error);
+      response.status(401).json({ error: 'Authentication failed.' }); // Set an appropriate HTTP status code
+      return; // Return to exit the function
     }
+    console.log('After try and catch ', session);
+    // Return the session data in the response
+    response.json({ session: session });
   }
 
   @HttpCode(HttpStatus.OK)

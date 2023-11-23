@@ -1,8 +1,9 @@
-import { Controller, Get, Query, Session } from '@nestjs/common';
-import { UserSession } from '../common';
+import { Controller, Get, Query, Session, UseGuards } from '@nestjs/common';
+import { AuthGuard, UserSession } from '../common';
 import { ApiQuery } from '@nestjs/swagger';
 import { ModelService } from './model.service';
 import { OpenAiService } from '../open-ai/open-ai.service';
+import { Entity } from './types';
 
 @Controller('model')
 export class ModelController {
@@ -11,6 +12,7 @@ export class ModelController {
     private readonly openaiService: OpenAiService,
   ) {}
 
+  @UseGuards(AuthGuard)
   @Get('GenerateStoryWithTokens')
   @ApiQuery({
     name: 'description',
@@ -23,7 +25,9 @@ export class ModelController {
   ): Promise<string> {
     const tokens = await this.modelService.identifyTokens(description);
     const concatenatedString = tokens.join(' ');
-    const sentence = await this.openaiService.openAiResponse(concatenatedString);
+    const sentence = await this.openaiService.openAiResponse(
+      concatenatedString,
+    );
 
     await this.modelService.crateStory(session.user.id, description, sentence);
 
@@ -38,7 +42,7 @@ export class ModelController {
   })
   async generateTokens(
     @Query('description') description: string,
-  ): Promise<string[]> {
+  ): Promise<Entity[]> {
     const tokens = await this.modelService.identifyTokens(description);
 
     return tokens;
