@@ -7,7 +7,7 @@ import { PrismaService } from '../prisma/prisma.service';
 export class ModelService {
   constructor(private prisma: PrismaService) {}
 
-  async identifyTokens(data: String): Promise<String> {
+  async identifyTokens(data: String): Promise<any[]> {
     try {
       console.log('JSON OBJ to the API ', JSON.stringify({ text: data }));
 
@@ -42,26 +42,12 @@ export class ModelService {
         'I-MISC': 'Miscellaneous',
       };
 
-      const formattedEntities = responseData.reduce((acc, entity) => {
-        const entityType = entityTypeMap[entity.entity];
-        if (!acc[entityType]) {
-          acc[entityType] = '';
-        }
+      const formattedEntities = responseData.map(entity => ({
+        type: entityTypeMap[entity.entity],
+        value: entity.word.replace('##', ''), // Remove '##' from the word
+      }));
 
-        if (entityType === 'Person') {
-          if (entity.entity === 'B-PER') {
-            acc[entityType] += entity.word;
-          } else if (entity.entity === 'I-PER') {
-            acc[entityType] += entity.word.replace('##', '');
-          }
-        } else {
-          acc[entityType] += (acc[entityType] ? ' ' : '') + entity.word;
-        }
-
-        return acc;
-      }, {});
-
-      return JSON.stringify(formattedEntities);
+      return formattedEntities;
     } catch (error) {
       throw new InternalServerErrorException(error.message);
     }
