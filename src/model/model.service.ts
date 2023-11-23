@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, InternalServerErrorException } from '@nestjs/common';
 import fetch from 'node-fetch';
 import { ValidationException } from '../common';
 import { PrismaService } from '../prisma/prisma.service';
@@ -7,25 +7,64 @@ import { PrismaService } from '../prisma/prisma.service';
 export class ModelService {
   constructor(private prisma: PrismaService) {}
 
-  async identifyTokens(data: String): Promise<String> {
-    const response = await fetch(
-      'https://seahorse-app-pq5ct.ondigitalocean.app/',
-      {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
+  async identifyTokens(data: string): Promise<any[]> {
+    try {
+      console.log('JSON OBJ to the API ', JSON.stringify({ text: data }));
+
+      const response = await fetch(
+        'https://seahorse-app-pq5ct.ondigitalocean.app/',
+        {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            text: data,
+          }),
         },
-        body: JSON.stringify({
-          text: data,
-        }),
-      },
-    );
-    // Check the correct spelling of "json()" in the following line
-    const responseData = await response.json();
+      );
 
-    let sentence = responseData.map((item) => item.word).join(' ');
+      if (!response.ok) {
+        throw new InternalServerErrorException('Failed to fetch data from the API');
+      }
 
-    return sentence;
+      const responseData = await response.json();
+      console.log('Response from model line 22 ', responseData);
+
+      const entityTypeMap = {
+        'B-PER': 'Person',
+        'I-PER': 'Person',
+        'B-ORG': 'Organization',
+        'I-ORG': 'Organization',
+        'B-LOC': 'Location',
+        'I-LOC': 'Location',
+        'B-MISC': 'Miscellaneous',
+        'I-MISC': 'Miscellaneous',
+      };
+
+      const formattedEntities: any[] = [];
+
+      let currentEntity = { type: '', value: '' };
+      responseData.forEach((entity: any) => {
+        const entityType = entityTypeMap[entity.entity];
+        if (currentEntity.type !== entityType) {
+          if (currentEntity.type !== '') {
+            formattedEntities.push(currentEntity);
+          }
+          currentEntity = { type: entityType, value: entity.word };
+        } else if (entity.word.includes('#')) {
+          currentEntity.value += `${entity.word.replace(/#+/g, '')}`;
+        } else {
+          currentEntity.value += ` ${entity.word}`;
+        }
+      });
+
+      formattedEntities.push(currentEntity); // Push the last entity
+
+      return formattedEntities;
+    } catch (error) {
+      throw new InternalServerErrorException(error.message);
+    }
   }
 
   async crateStory(user_id: number, user_text: string, story: string) {

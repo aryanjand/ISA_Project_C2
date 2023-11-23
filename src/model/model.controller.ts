@@ -11,25 +11,26 @@ export class ModelController {
     private readonly openaiService: OpenAiService,
   ) {}
 
-  // @UseGuards(AuthGuard)
-  // @Get('GenerateStoryWithTokens')
-  // @ApiQuery({
-  //   name: 'description',
-  //   type: String,
-  //   description: 'Description of the User',
-  // })
-  // async generateTokensWithStory(
-  //   @Session() session: UserSession,
-  //   @Query('description') description: string,
-  // ): Promise<String | ArrayBuffer> {
-  //   // Assuming your service has a method to generate the image
-  //   const tokens = await this.modelService.identifyTokens(description)
-  //   const sentence = await this.openaiService.openAiResponse(tokens);
-  //   await this.modelService.crateStory(session.user.id, description, sentence);
-  //   return sentence;
-  // }
-
   @UseGuards(AuthGuard)
+  @Get('GenerateStoryWithTokens')
+  @ApiQuery({
+    name: 'description',
+    type: String,
+    description: 'Description of the User',
+  })
+  async generateTokensWithStory(
+    @Session() session: UserSession,
+    @Query('description') description: string,
+  ): Promise<string> {
+    const tokens = await this.modelService.identifyTokens(description);
+    const concatenatedString = tokens.join(' ');
+    const sentence = await this.openaiService.openAiResponse(concatenatedString);
+
+    await this.modelService.crateStory(session.user.id, description, sentence);
+
+    return sentence;
+  }
+
   @Get('GenerateTokens')
   @ApiQuery({
     name: 'description',
@@ -38,11 +39,9 @@ export class ModelController {
   })
   async generateTokens(
     @Query('description') description: string,
-  ): Promise<String | ArrayBuffer> {
-    // Assuming your service has a method to generate the image
+  ): Promise<string[]> {
     const tokens = await this.modelService.identifyTokens(description);
 
-    // You can return the image data or URL, depending on your needs
     return tokens;
   }
 }
