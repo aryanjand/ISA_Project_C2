@@ -23,77 +23,25 @@ type Context = {
 export class ModelService {
   constructor(private prisma: PrismaService) {}
 
-  async identifyTokens(data: String): Promise<string> {
-    try {
-      console.log('JSON OBJ to the API ', JSON.stringify({ text: data }));
-
-      const response = await fetch(
-        'https://seahorse-app-pq5ct.ondigitalocean.app/',
-        {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({
-            text: data,
-          }),
+  async identifyTokens(data: String): Promise<String> {
+    const response = await fetch(
+      'https://seahorse-app-pq5ct.ondigitalocean.app/',
+      {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
         },
-      );
+        body: JSON.stringify({
+          text: data,
+        }),
+      },
+    );
+    // Check the correct spelling of "json()" in the following line
+    const responseData = await response.json();
 
-      if (!response.ok) {
-        throw new InternalServerErrorException('Failed to fetch data from the API');
-      }
+    let sentence = responseData.map((item) => item.word).join(' ');
 
-      const responseData:EntityData[] = await response.json();
-      const context:Context = this.formatContext(responseData);
-
-      return JSON.stringify(context);
-    } catch (error) {
-      throw new InternalServerErrorException(error.message);
-    }
-  }
-
-  formatContext(data: EntityData[]) {
-    let context:Context = {
-      person: '',
-      location: '',
-      organization: '',
-      miscellaneous: '',
-    };
-
-    data.forEach((entity) => {
-      switch (entity.entity) {
-        case 'PERSON':
-          context.person += this.personFormatter(entity.word);
-          break;
-        case 'LOCATION':
-          context.location += this.locationFormatter(entity.word);
-          break;
-        case 'ORGANIZATION':
-          context.organization += this.organizationFormatter(entity.word);
-          break;
-        case 'MISCELLANEOUS':
-          context.miscellaneous += this.miscellaneousFormatter(entity.word);
-          break;
-      }
-    });
-    return context;
-  }
-
-  personFormatter = (person: string) => {
-    return person.replace(/#+/g, '');
-  }
-  
-  locationFormatter = (location: string) => {
-    return location.replace(/#+/g, '');
-  }
-  
-  organizationFormatter = (organization: string) => {
-    return organization.replace(/#+/g, ''); 
-  }
-  
-  miscellaneousFormatter = (miscellaneous: string) => {
-    return miscellaneous.replace(/#+/g, '');
+    return sentence;
   }
 
   async crateStory(user_id: number, user_text: string, story: string) {
