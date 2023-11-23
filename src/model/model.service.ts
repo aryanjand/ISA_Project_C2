@@ -8,7 +8,6 @@ export class ModelService {
   constructor(private prisma: PrismaService) {}
 
   async identifyTokens(data: String): Promise<String> {
-
     const response = await fetch(
       'https://seahorse-app-pq5ct.ondigitalocean.app/',
       {
