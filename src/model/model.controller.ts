@@ -24,7 +24,9 @@ export class ModelController {
   ): Promise<string> {
     const tokens = await this.modelService.identifyTokens(description);
     const concatenatedString = tokens.join(' ');
-    const sentence = await this.openaiService.openAiResponse(concatenatedString);
+    const sentence = await this.openaiService.openAiResponse(
+      concatenatedString,
+    );
 
     await this.modelService.crateStory(session.user.id, description, sentence);
 

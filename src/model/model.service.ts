@@ -25,7 +25,9 @@ export class ModelService {
       );
 
       if (!response.ok) {
-        throw new InternalServerErrorException('Failed to fetch data from the API');
+        throw new InternalServerErrorException(
+          'Failed to fetch data from the API',
+        );
       }
 
       const responseData = await response.json();

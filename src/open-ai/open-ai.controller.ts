@@ -3,7 +3,6 @@ import { ApiQuery } from '@nestjs/swagger';
 import { OpenAiService } from './open-ai.service';
 import { AuthGuard } from 'src/common/guards';
 
-
 @Controller('open-ai')
 export class OpenAiController {
   constructor(private readonly openaiService: OpenAiService) {}
