@@ -3,6 +3,7 @@ import { AuthGuard, UserSession } from '../common';
 import { ApiQuery } from '@nestjs/swagger';
 import { ModelService } from './model.service';
 import { OpenAiService } from '../open-ai/open-ai.service';
+import { Entity } from './types';
 
 @Controller('model')
 export class ModelController {
@@ -41,7 +42,7 @@ export class ModelController {
   })
   async generateTokens(
     @Query('description') description: string,
-  ): Promise<string[]> {
+  ): Promise<Entity[]> {
     const tokens = await this.modelService.identifyTokens(description);
 
     return tokens;
