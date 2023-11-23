@@ -22,7 +22,7 @@ export class OpenAiService {
           },
           {
             role: 'user',
-            content: `Write a fantasy story based on these key words keep it short: ${prompt}`,
+            content: `Write a 150 character fantasy story based on these key words, keep it short: ${prompt}`,
           },
         ],
         temperature: 0.8,
