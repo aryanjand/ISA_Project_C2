@@ -18,15 +18,15 @@ export class OpenAiService {
         messages: [
           {
             role: 'system',
-            content: 'You are a story writer.',
+            content: 'You are a PG-13 fantasy story writer.',
           },
           {
             role: 'user',
-            content: `Write a story based on these key words keep it short: ${prompt}`,
+            content: `Write a fantasy story based on these key words keep it short: ${prompt}`,
           },
         ],
         temperature: 0.8,
-        max_tokens: 1024,
+        max_tokens: 200,
       });
       const generatedText = response.choices[0].message.content.trim();
       console.log('Generated Text:', generatedText);

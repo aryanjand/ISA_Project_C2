@@ -22,13 +22,27 @@ export class ModelService {
         }),
       },
     );
-    // Check the correct spelling of "json()" in the following line
+
     const responseData = await response.json();
     console.log('Response form model line 22 ', responseData);
 
-    let sentence = responseData.map((item) => item.word).join(' ');
+    const groupedEntities = responseData.reduce((acc, entity) => {
+      if (!acc[entity.entity]) {
+        acc[entity.entity] = [];
+      }
+      acc[entity.entity].push(entity.word);
+      return acc;
+    }, {});
 
-    return sentence;
+    const formattedEntities = Object.keys(groupedEntities).reduce((acc, entityType) => {
+      const words = groupedEntities[entityType].join(' ');
+      acc.push(`${entityType}: ${words}`);
+      return acc;
+    }, []);
+
+    const finalSentence = formattedEntities.join(', ');
+
+    return finalSentence;
   }
 
   async crateStory(user_id: number, user_text: string, story: string) {
