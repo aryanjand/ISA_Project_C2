@@ -51,12 +51,7 @@ export class ModelService {
         return acc;
       }, {});
 
-      const finalObject = Object.keys(formattedEntities).reduce((acc, entityType) => {
-        acc[entityType] = formattedEntities[entityType].join(', ');
-        return acc;
-      }, {});
-
-      return JSON.stringify(finalObject);
+      return JSON.stringify(formattedEntities);
     } catch (error) {
       throw new InternalServerErrorException(error.message);
     }
