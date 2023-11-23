@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, InternalServerErrorException } from '@nestjs/common';
 import fetch from 'node-fetch';
 import { ValidationException } from '../common';
 import { PrismaService } from '../prisma/prisma.service';
@@ -8,50 +8,58 @@ export class ModelService {
   constructor(private prisma: PrismaService) {}
 
   async identifyTokens(data: String): Promise<String> {
-    console.log('JSON OBJ to the API ', JSON.stringify({ text: data }));
+    try {
+      console.log('JSON OBJ to the API ', JSON.stringify({ text: data }));
 
-    const response = await fetch(
-      'https://seahorse-app-pq5ct.ondigitalocean.app/',
-      {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
+      const response = await fetch(
+        'https://seahorse-app-pq5ct.ondigitalocean.app/',
+        {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            text: data,
+          }),
         },
-        body: JSON.stringify({
-          text: data,
-        }),
-      },
-    );
+      );
 
-    const responseData = await response.json();
-    console.log('Response form model line 22 ', responseData);
-
-    const entityTypeMap = {
-      'B-PER': 'Person',
-      'I-PER': 'Person',
-      'B-ORG': 'Organization',
-      'I-ORG': 'Organization',
-      'B-LOC': 'Location',
-      'I-LOC': 'Location',
-      'B-MISC': 'Miscellaneous',
-      'I-MISC': 'Miscellaneous',
-    };
-
-    const formattedEntities = responseData.reduce((acc, entity) => {
-      const entityType = entityTypeMap[entity.entity];
-      if (!acc[entityType]) {
-        acc[entityType] = [];
+      if (!response.ok) {
+        throw new InternalServerErrorException('Failed to fetch data from the API');
       }
-      acc[entityType].push(entity.word);
-      return acc;
-    }, {});
 
-    const finalObject = Object.keys(formattedEntities).reduce((acc, entityType) => {
-      acc[entityType] = formattedEntities[entityType].join(' ');
-      return acc;
-    }, {});
+      const responseData = await response.json();
+      console.log('Response from model line 22 ', responseData);
 
-    return JSON.stringify(finalObject);
+      const entityTypeMap = {
+        'B-PER': 'Person',
+        'I-PER': 'Person',
+        'B-ORG': 'Organization',
+        'I-ORG': 'Organization',
+        'B-LOC': 'Location',
+        'I-LOC': 'Location',
+        'B-MISC': 'Miscellaneous',
+        'I-MISC': 'Miscellaneous',
+      };
+
+      const formattedEntities = responseData.reduce((acc, entity) => {
+        const entityType = entityTypeMap[entity.entity];
+        if (!acc[entityType]) {
+          acc[entityType] = [];
+        }
+        acc[entityType].push(entity.word);
+        return acc;
+      }, {});
+
+      const finalObject = Object.keys(formattedEntities).reduce((acc, entityType) => {
+        acc[entityType] = formattedEntities[entityType].join(', ');
+        return acc;
+      }, {});
+
+      return JSON.stringify(finalObject);
+    } catch (error) {
+      throw new InternalServerErrorException(error.message);
+    }
   }
 
   async crateStory(user_id: number, user_text: string, story: string) {
