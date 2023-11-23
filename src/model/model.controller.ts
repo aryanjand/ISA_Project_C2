@@ -1,5 +1,5 @@
-import { Controller, Get, Query, Session } from '@nestjs/common';
-import { UserSession } from '../common';
+import { Controller, Get, Query, Session, UseGuards } from '@nestjs/common';
+import { AuthGuard, UserSession } from '../common';
 import { ApiQuery } from '@nestjs/swagger';
 import { ModelService } from './model.service';
 import { OpenAiService } from '../open-ai/open-ai.service';
@@ -11,26 +11,25 @@ export class ModelController {
     private readonly openaiService: OpenAiService,
   ) {}
 
-  @Get('GenerateStoryWithTokens')
-  @ApiQuery({
-    name: 'description',
-    type: String,
-    description: 'Description of the User',
-  })
-  async generateTokensWithStory(
-    @Session() session: UserSession,
-    @Query('description') description: string,
-  ): Promise<String | ArrayBuffer> {
-    // Assuming your service has a method to generate the image
-    const tokens = await this.modelService.identifyTokens(description);
+  // @UseGuards(AuthGuard)
+  // @Get('GenerateStoryWithTokens')
+  // @ApiQuery({
+  //   name: 'description',
+  //   type: String,
+  //   description: 'Description of the User',
+  // })
+  // async generateTokensWithStory(
+  //   @Session() session: UserSession,
+  //   @Query('description') description: string,
+  // ): Promise<String | ArrayBuffer> {
+  //   // Assuming your service has a method to generate the image
+  //   const tokens = await this.modelService.identifyTokens(description)
+  //   const sentence = await this.openaiService.openAiResponse(tokens);
+  //   await this.modelService.crateStory(session.user.id, description, sentence);
+  //   return sentence;
+  // }
 
-    const sentence = await this.openaiService.openAiResponse(tokens);
-
-    await this.modelService.crateStory(session.user.id, description, sentence);
-
-    return sentence;
-  }
-
+  @UseGuards(AuthGuard)
   @Get('GenerateTokens')
   @ApiQuery({
     name: 'description',
