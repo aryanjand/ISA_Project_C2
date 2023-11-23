@@ -2,6 +2,23 @@ import { Injectable, InternalServerErrorException } from '@nestjs/common';
 import fetch from 'node-fetch';
 import { ValidationException } from '../common';
 import { PrismaService } from '../prisma/prisma.service';
+import { type } from 'os';
+type EntityData = {
+  entity: string;
+  score: number;
+  index: number;
+  word: string;
+  start: null; // You can replace null with the appropriate type if needed
+  end: null;   // You can replace null with the appropriate type if needed
+};
+
+type Context = {
+  person: string;
+  location?: string;
+  organization?: string;
+  miscellaneous?: string;
+}
+
 
 @Injectable()
 export class ModelService {
@@ -28,43 +45,80 @@ export class ModelService {
         throw new InternalServerErrorException('Failed to fetch data from the API');
       }
 
-      const responseData = await response.json();
-      console.log('Response from model line 22 ', responseData);
+      const responseData:EntityData[] = await response.json();
+      const context:Context = this.formatContext(responseData);
 
-      const entityTypeMap = {
-        'B-PER': 'Person',
-        'I-PER': 'Person',
-        'B-ORG': 'Organization',
-        'I-ORG': 'Organization',
-        'B-LOC': 'Location',
-        'I-LOC': 'Location',
-        'B-MISC': 'Miscellaneous',
-        'I-MISC': 'Miscellaneous',
-      };
-
-      const formattedEntities = responseData.reduce((acc, entity) => {
-        const entityType = entityTypeMap[entity.entity];
-        if (!acc[entityType]) {
-          acc[entityType] = '';
-        }
-
-        if (entityType === 'Person') {
-          if (entity.entity === 'B-PER') {
-            acc[entityType] += entity.word;
-          } else if (entity.entity === 'I-PER') {
-            acc[entityType] += entity.word.replace('##', '');
-          }
-        } else {
-          acc[entityType] += (acc[entityType] ? ' ' : '') + entity.word;
-        }
-
-        return acc;
-      }, {});
-
-      return JSON.stringify(formattedEntities);
+      return JSON.stringify(context);
     } catch (error) {
       throw new InternalServerErrorException(error.message);
     }
+  }
+
+  formatContext(data: EntityData[]) {
+    let context:Context = {
+      person: '',
+      location: '',
+      organization: '',
+      miscellaneous: '',
+    };
+
+    data.forEach((entity) => {
+      switch (entity.entity) {
+        case 'PERSON':
+          context.person = this.personFormatter(entity.word);
+          break;
+        case 'LOCATION':
+          context.location = this.locationFormatter(entity.word);
+          break;
+        case 'ORGANIZATION':
+          context.organization = this.organizationFormatter(entity.word);
+          break;
+        case 'MISCELLANEOUS':
+          context.miscellaneous = this.miscellaneousFormatter(entity.word);
+          break;
+      }
+    });
+    return context;
+  }
+
+  personFormatter = (person: string) => {
+    let name: string = "";
+    for (let i = 0; i < person.length; i++) {
+      if (person[i] !== "#") {
+        name += person[i];
+      }
+    }
+    return name;
+  }
+
+  locationFormatter = (location: string) => {
+    let name: string = "";
+    for (let i = 0; i < location.length; i++) {
+      if (location[i] !== "#") {
+        name += location[i];
+      }
+    }
+    return name;
+  }  
+
+  organizationFormatter = (organization: string) => {
+    let name: string = "";
+    for (let i = 0; i < organization.length; i++) {
+      if (organization[i] !== "#") {
+        name += organization[i];
+      }
+    }
+    return name;
+  }
+
+  miscellaneousFormatter = (miscellaneous: string) => {
+    let name: string = "";
+    for (let i = 0; i < miscellaneous.length; i++) {
+      if (miscellaneous[i] !== "#") {
+        name += miscellaneous[i];
+      }
+    }
+    return name;
   }
 
   async crateStory(user_id: number, user_text: string, story: string) {
