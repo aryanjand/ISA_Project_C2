@@ -26,23 +26,32 @@ export class ModelService {
     const responseData = await response.json();
     console.log('Response form model line 22 ', responseData);
 
-    const groupedEntities = responseData.reduce((acc, entity) => {
-      if (!acc[entity.entity]) {
-        acc[entity.entity] = [];
+    const entityTypeMap = {
+      'B-PER': 'Person',
+      'I-PER': 'Person',
+      'B-ORG': 'Organization',
+      'I-ORG': 'Organization',
+      'B-LOC': 'Location',
+      'I-LOC': 'Location',
+      'B-MISC': 'Miscellaneous',
+      'I-MISC': 'Miscellaneous',
+    };
+
+    const formattedEntities = responseData.reduce((acc, entity) => {
+      const entityType = entityTypeMap[entity.entity];
+      if (!acc[entityType]) {
+        acc[entityType] = [];
       }
-      acc[entity.entity].push(entity.word);
+      acc[entityType].push(entity.word);
       return acc;
     }, {});
 
-    const formattedEntities = Object.keys(groupedEntities).reduce((acc, entityType) => {
-      const words = groupedEntities[entityType].join(' ');
-      acc.push(`${entityType}: ${words}`);
+    const finalObject = Object.keys(formattedEntities).reduce((acc, entityType) => {
+      acc[entityType] = formattedEntities[entityType].join(' ');
       return acc;
-    }, []);
+    }, {});
 
-    const finalSentence = formattedEntities.join(', ');
-
-    return finalSentence;
+    return JSON.stringify(finalObject);
   }
 
   async crateStory(user_id: number, user_text: string, story: string) {
