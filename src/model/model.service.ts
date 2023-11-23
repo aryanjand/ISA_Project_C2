@@ -47,7 +47,17 @@ export class ModelService {
         if (!acc[entityType]) {
           acc[entityType] = '';
         }
-        acc[entityType] += (acc[entityType] ? ' ' : '') + entity.word;
+
+        if (entityType === 'Person') {
+          if (entity.entity === 'B-PER') {
+            acc[entityType] += entity.word;
+          } else if (entity.entity === 'I-PER') {
+            acc[entityType] += entity.word.replace('##', '');
+          }
+        } else {
+          acc[entityType] += (acc[entityType] ? ' ' : '') + entity.word;
+        }
+
         return acc;
       }, {});
 
