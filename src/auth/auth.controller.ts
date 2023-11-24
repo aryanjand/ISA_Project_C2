@@ -14,7 +14,7 @@ import { UserSession } from '../common';
 import { AuthService } from './auth.service';
 import { UserDto } from './dto';
 import { ApiBody, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
-import { AuthGuard } from '@nestjs/passport';
+
 
 @ApiTags('User Authentication')
 @Controller()
