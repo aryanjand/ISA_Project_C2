@@ -14,7 +14,7 @@ import { UserSession } from '../common';
 import { AuthService } from './auth.service';
 import { UserDto } from './dto';
 import { ApiBody, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
-
+import { TokenCookie } from 'src/common/decorators/token-cookie.decorator';
 
 @ApiTags('User Authentication')
 @Controller()
@@ -34,13 +34,12 @@ export class AuthController {
   })
   @Post('signin')
   async signIn(
-    @Session() session: UserSession,
     @Body() dto: UserDto,
-    @Res() response: Response,
+    @Res({ passthrough: true }) response: Response,
   ) {
     try {
       // Call your authentication service to sign in the user
-      await this.authService.signIn(session, dto, response);
+      await this.authService.signIn(dto, response);
 
       console.log('After the await');
     } catch (error) {
@@ -49,9 +48,9 @@ export class AuthController {
       response.status(401).json({ error: 'Authentication failed.' }); // Set an appropriate HTTP status code
       return; // Return to exit the function
     }
-    console.log('After try and catch ', session);
+    console.log('After try and catch ');
     // Return the session data in the response
-    response.json({ session: session });
+    return;
   }
 
   @HttpCode(HttpStatus.CREATED)
@@ -67,13 +66,12 @@ export class AuthController {
   })
   @Post('signup')
   async signUp(
-    @Session() session: UserSession,
     @Body() dto: UserDto,
-    @Res() response: Response,
+    @Res({ passthrough: true }) response: Response,
   ) {
     try {
       // Call your authentication service to sign in the user
-      await this.authService.signUp(session, dto, response);
+      await this.authService.signUp(dto, response);
 
       console.log('After the await');
     } catch (error) {
@@ -82,9 +80,9 @@ export class AuthController {
       response.status(401).json({ error: 'Authentication failed.' }); // Set an appropriate HTTP status code
       return; // Return to exit the function
     }
-    console.log('After try and catch ', session);
+    console.log('After try and catch ');
     // Return the session data in the response
-    response.json({ session: session });
+    return;
   }
 
   @HttpCode(HttpStatus.OK)
@@ -94,9 +92,9 @@ export class AuthController {
     description: 'User has been successfully signed out.',
   })
   @Get('signout')
-  async signOut(@Session() session: UserSession, @Res() res: Response) {
-    await this.authService.signOut(session, res);
-    return { authenticated: false };
+  async signOut(@TokenCookie() token: string, @Res() res: Response) {
+    await this.authService.signOut(token, res);
+    return;
   }
 
   @HttpCode(HttpStatus.OK)
@@ -106,15 +104,7 @@ export class AuthController {
     description: 'User has been successfully authenticated',
   })
   @Get('status')
-  status(@Session() session: UserSession) {
-    const isLoggedIn = session && session.user && session.authenticated;
-
-    if (isLoggedIn) {
-      // User is logged in
-      return { authenticated: true };
-    } else {
-      // User is not logged in
-      return { authenticated: false };
-    }
+  status(@TokenCookie() token: string) {
+    return this.authService.session(token);
   }
 }

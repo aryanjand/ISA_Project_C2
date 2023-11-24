@@ -1,4 +1,4 @@
-import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
+import { HttpException, HttpStatus, Injectable, InternalServerErrorException } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import * as bcrypt from 'bcrypt';
 import { Response, Request } from 'express';
@@ -25,7 +25,7 @@ export class AuthService {
     });
   }
 
-  async signIn(session: UserSession, dto: UserDto, res: Response) {
+  async signIn(dto: UserDto, res: Response) {
     const user = await this.prisma.user.findUnique({
       where: { username: dto.username },
     });
@@ -54,13 +54,10 @@ export class AuthService {
       maxAge: 1000 * 60 * 60, // 1 hour
     });
 
-    session.authenticated = true;
-    session.user = user;
-
     return;
   }
 
-  async signUp(session: UserSession, dto: UserDto, res: Response) {
+  async signUp(dto: UserDto, res: Response) {
     try {
       const user = await this.prisma.user.create({
         data: {
@@ -78,9 +75,6 @@ export class AuthService {
         maxAge: 1000 * 60 * 60, // 1 hour
       });
 
-      session.authenticated = true;
-      session.user = user;
-
       return;
     } catch (err) {
       if (err.code === 'P2002') {
@@ -90,14 +84,27 @@ export class AuthService {
     }
   }
 
-  async signOut(session: UserSession, res: Response) {
-    res.clearCookie('connect.sid');
-    session.destroy((err) => {
-      if (err) {
-        throw new HttpException(err.message, HttpStatus.SERVICE_UNAVAILABLE);
+  async signOut(token: string,  res: Response) {
+    if (!token) return;
+    try {
+      await this.prisma.expiredJwt.create({
+        data: {
+          token,
+        },
+      });
+
+      res.clearCookie(this.config.get('TOKEN_NAME', 'aryan.sid'), {
+        path: '/',
+      });
+
+      return;
+    } catch (err) {
+      if (err.code === 'P2002') {
+        // token already exists
+        return;
       }
-    });
-    return;
+      throw new InternalServerErrorException(err.message);
+    }
   }
 
   async session(token: string) {
