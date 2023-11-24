@@ -5,6 +5,7 @@ import {
   UnauthorizedException,
   ForbiddenException,
 } from '@nestjs/common';
+import { Request } from 'express';
 import { AuthService } from './auth.service';
 
 @Injectable()
@@ -13,14 +14,12 @@ export class AuthGuard implements CanActivate {
 
   async canActivate(context: ExecutionContext): Promise<boolean> {
     try {
-      const request = context.switchToHttp().getRequest();
-      const { authorization }: any = request.headers;
-      if (!authorization || authorization.trim() === '') {
+      const request = context.switchToHttp().getRequest<Request>();
+      const  authorization : string | undefined = request.cookies['aryan.sid'];
+      if (!authorization) {
         throw new UnauthorizedException('Please provide token');
       }
-      const authToken = authorization.replace(/bearer/gim, '').trim();
-      const resp = await this.authService.validateToken(authToken);
-      request.decodedData = resp;
+      await this.authService.validateToken(authorization);
       return true;
     } catch (error) {
       console.log('auth error - ', error.message);
