@@ -38,3 +38,11 @@ model Story {
   user_text    String   @db.VarChar(50)
   story_text   String   @db.LongText
 }
+
+model ExpiredJwt {
+  id         Int      @id @default(autoincrement())
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+  
+  token      String   @db.VarChar(400) @unique
+}
