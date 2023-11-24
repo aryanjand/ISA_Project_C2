@@ -99,4 +99,16 @@ export class AuthService {
     });
     return;
   }
+
+  async session(token: string) {
+    if (!token) {
+      return { authenticated: false };
+    }
+    try {
+      await this.jwt.verifyAsync(token);
+      return { authenticated: true };
+    } catch (err) {
+      return { authenticated: false };
+    }
+  }
 }
