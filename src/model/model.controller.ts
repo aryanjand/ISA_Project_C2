@@ -22,14 +22,14 @@ export class ModelController {
   async generateTokensWithStory(
     @Session() session: UserSession,
     @Query('description') description: string,
-  ): Promise<string> {
+  ): Promise<{prompt: string}> {
     const tokens = await this.modelService.identifyTokens(description);
     const concatenatedString = tokens.join(' ');
     const sentence = await this.openaiService.openAiResponse(
       concatenatedString,
     );
 
-    await this.modelService.crateStory(session.user.id, description, sentence);
+    await this.modelService.crateStory(session.user.id, description, sentence.prompt);
 
     return sentence;
   }

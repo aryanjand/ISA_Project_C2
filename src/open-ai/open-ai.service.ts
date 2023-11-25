@@ -5,7 +5,7 @@ import OpenAI from 'openai';
 @Global()
 @Injectable()
 export class OpenAiService {
-  async openAiResponse(prompt: String): Promise<string> {
+  async openAiResponse(prompt: String): Promise<{prompt: string}> {
     try {
       const openai = new OpenAI({
         apiKey: process.env.OPENAI_API_KEY,
@@ -27,7 +27,7 @@ export class OpenAiService {
         max_tokens: 200,
       });
       const generatedText = response.choices[0].message.content.trim();
-      return generatedText;
+      return {prompt: generatedText};
     } catch (error) {
       console.error('Error in openAiResponse:', error);
       throw new Error('Error generating response from OpenAI API');

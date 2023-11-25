@@ -62,8 +62,8 @@ export class AuthService {
       secure: process.env.NODE_ENV === 'production',
       maxAge: 1000 * 60 * 60, // 1 hour
     });
-
-    return;
+    const userBundle = {username: user.username, privilege: user.user_privilege, api_calls: user.api_calls_left};
+    return { success: true, user: userBundle};
   }
 
   async signUp(dto: UserDto, res: Response) {
@@ -88,7 +88,8 @@ export class AuthService {
         },
       );
 
-      return;
+      const userBundle = {username: user.username, privilege: user.user_privilege, api_calls: user.api_calls_left};
+      return { success: true, user: userBundle};
     } catch (err) {
       if (err.code === 'P2002') {
         throw new ValidationException('Credentials taken');

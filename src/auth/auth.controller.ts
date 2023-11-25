@@ -39,7 +39,8 @@ export class AuthController {
   ) {
     try {
       // Call your authentication service to sign in the user
-      await this.authService.signIn(dto, response);
+      const result = await this.authService.signIn(dto, response);
+      return result;
     } catch (error) {
       // Handle authentication errors
       console.error('Authentication failed:', error);
@@ -67,9 +68,8 @@ export class AuthController {
   ) {
     try {
       // Call your authentication service to sign in the user
-      await this.authService.signUp(dto, response);
-
-      console.log('After the await');
+      const result = await this.authService.signUp(dto, response);
+      return result;
     } catch (error) {
       // Handle authentication errors
       console.error('Authentication failed:', error);
