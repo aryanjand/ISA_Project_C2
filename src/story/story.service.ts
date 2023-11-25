@@ -2,6 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { User } from '@prisma/client';
 import { ValidationException } from '../common';
+import { Request } from '@nestjs/common';
 
 @Injectable()
 export class StoryService {
