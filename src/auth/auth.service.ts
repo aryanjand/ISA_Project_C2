@@ -126,8 +126,9 @@ export class AuthService {
       return { authenticated: false };
     }
     try {
-      await this.jwt.verifyAsync(token);
-      return { authenticated: true };
+      const info = await this.jwt.verifyAsync(token);
+      const user = { username: info.user.username, privilege: info.user.user_privilege, api_calls: info.user.api_calls_left};
+      return { authenticated: true, user };
     } catch (err) {
       return { authenticated: false };
     }
