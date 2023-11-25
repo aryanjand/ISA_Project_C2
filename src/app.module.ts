@@ -16,6 +16,7 @@ import { UserService } from './user/user.service';
 import { UserController } from './user/user.controller';
 import { UserModule } from './user/user.module';
 import { StoryModule } from './story/story.module';
+import { AdminController } from './admin/admin.controller';
 
 @Module({
   imports: [
@@ -32,7 +33,7 @@ import { StoryModule } from './story/story.module';
     UserModule,
     StoryModule,
   ],
-  controllers: [AppController, OpenAiController, UserController],
+  controllers: [AppController, OpenAiController, UserController, AdminController],
   providers: [
     {
       provide: 'APP_FILTER',
