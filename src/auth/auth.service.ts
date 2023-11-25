@@ -57,7 +57,7 @@ export class AuthService {
     console.log('User ', this.jwt.decode(token));
     console.log('Token ', process.env.TOKEN_NAME);
 
-    res.cookie(this.config.get<string>('TOKEN_NAME', 'aryan.sid'), token, {
+    res.cookie(this.config.get<string>('TOKEN_NAME', process.env.TOKEN_NAME), token, {
       httpOnly: process.env.NODE_ENV === 'production',
       secure: process.env.NODE_ENV === 'production',
       maxAge: 1000 * 60 * 60, // 1 hour
