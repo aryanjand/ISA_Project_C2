@@ -39,9 +39,10 @@ export class AuthController {
   ) {
     try {
       // Call your authentication service to sign in the user
-      await this.authService.signIn(dto, response);
+      const result = await this.authService.signIn(dto, response);
 
       console.log('After the await');
+      return result;
     } catch (error) {
       // Handle authentication errors
       console.error('Authentication failed:', error);
@@ -104,7 +105,10 @@ export class AuthController {
     description: 'User has been successfully authenticated',
   })
   @Get('status')
-  status(@TokenCookie() token: string) {
-    return this.authService.session(token);
+  async status(@TokenCookie() token: string) {
+    console.log("token", token);
+    const result = await this.authService.session(token);
+    console.log("status", result);
+    return result;
   }
 }

@@ -54,7 +54,9 @@ export class AuthService {
       maxAge: 1000 * 60 * 60, // 1 hour
     });
 
-    return;
+    console.log("user", user);
+    
+    return user;
   }
 
   async signUp(dto: UserDto, res: Response) {
