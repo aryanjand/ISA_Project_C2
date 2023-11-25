@@ -3,10 +3,12 @@ import fetch from 'node-fetch';
 import { ValidationException } from '../common';
 import { PrismaService } from '../prisma/prisma.service';
 import { Entity } from './types';
+import { JwtService } from '@nestjs/jwt';
+import { User } from '@prisma/client';
 
 @Injectable()
 export class ModelService {
-  constructor(private prisma: PrismaService) {}
+  constructor(private prisma: PrismaService, private jwt: JwtService) {}
 
   async identifyTokens(data: string): Promise<Entity[]> {
     try {
@@ -70,11 +72,53 @@ export class ModelService {
     }
   }
 
-  async crateStory(user_id: number, user_text: string, story: string) {
+  // async crateStory(user_id: number, user_text: string, story: string) {
+  //   try {
+  //     await this.prisma.user.update({
+  //       where: {
+  //         id: user_id,
+  //       },
+  //       data: {
+  //         api_calls_left: {
+  //           decrement: 1,
+  //         },
+  //       },
+  //     });
+
+  //     await this.prisma.story.create({
+  //       data: {
+  //         user_id: user_id,
+  //         user_text: user_text,
+  //         story_text: story,
+  //       },
+  //     });
+
+  //     return;
+  //   } catch (err) {
+  //     if (err.code === 'P2002') {
+  //       throw new ValidationException('Credentials taken');
+  //     }
+  //     throw new ValidationException('Something went wrong');
+  //   }
+  // }
+
+  async getUser(token: string) {
+    if (!token) {
+      return { authenticated: false };
+    }
+    try {
+      const {user} = await this.jwt.verifyAsync(token);
+      return user;
+    } catch (err) {
+      return { authenticated: false };
+    }
+  }
+
+  async storeStory(user: User, generatedText: {prompt: string}, description: string) {
     try {
       await this.prisma.user.update({
         where: {
-          id: user_id,
+          id: user.id,
         },
         data: {
           api_calls_left: {
@@ -85,13 +129,13 @@ export class ModelService {
 
       await this.prisma.story.create({
         data: {
-          user_id: user_id,
-          user_text: user_text,
-          story_text: story,
+          user_id: user.id,
+          user_text: description,
+          story_text: generatedText.prompt,
         },
       });
 
-      return;
+      return true;
     } catch (err) {
       if (err.code === 'P2002') {
         throw new ValidationException('Credentials taken');
