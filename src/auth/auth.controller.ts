@@ -7,14 +7,14 @@ import {
   Post,
   Request as Req,
   Response as Res,
-  Session,
+  UseGuards,
 } from '@nestjs/common';
-import { Response } from 'express';
-import { UserSession } from '../common';
 import { AuthService } from './auth.service';
 import { UserDto } from './dto';
 import { ApiBody, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
-import { AuthGuard } from '@nestjs/passport';
+import { TokenCookie } from 'src/common/decorators/token-cookie.decorator';
+import { AuthGuard } from '../common';
+import { Request, Response } from 'express';
 
 @ApiTags('User Authentication')
 @Controller()
@@ -34,24 +34,19 @@ export class AuthController {
   })
   @Post('signin')
   async signIn(
-    @Session() session: UserSession,
     @Body() dto: UserDto,
-    @Res() response: Response,
+    @Res({ passthrough: true }) response: Response,
   ) {
     try {
       // Call your authentication service to sign in the user
-      await this.authService.signIn(session, dto, response);
-
-      console.log('After the await');
+      await this.authService.signIn(dto, response);
     } catch (error) {
       // Handle authentication errors
       console.error('Authentication failed:', error);
       response.status(401).json({ error: 'Authentication failed.' }); // Set an appropriate HTTP status code
       return; // Return to exit the function
     }
-    console.log('After try and catch ', session);
-    // Return the session data in the response
-    response.json({ session: session });
+    return;
   }
 
   @HttpCode(HttpStatus.CREATED)
@@ -67,13 +62,12 @@ export class AuthController {
   })
   @Post('signup')
   async signUp(
-    @Session() session: UserSession,
     @Body() dto: UserDto,
-    @Res() response: Response,
+    @Res({ passthrough: true }) response: Response,
   ) {
     try {
       // Call your authentication service to sign in the user
-      await this.authService.signUp(session, dto, response);
+      await this.authService.signUp(dto, response);
 
       console.log('After the await');
     } catch (error) {
@@ -82,9 +76,9 @@ export class AuthController {
       response.status(401).json({ error: 'Authentication failed.' }); // Set an appropriate HTTP status code
       return; // Return to exit the function
     }
-    console.log('After try and catch ', session);
+    console.log('After try and catch ');
     // Return the session data in the response
-    response.json({ session: session });
+    return;
   }
 
   @HttpCode(HttpStatus.OK)
@@ -94,27 +88,28 @@ export class AuthController {
     description: 'User has been successfully signed out.',
   })
   @Get('signout')
-  async signOut(@Session() session: UserSession, @Res() res: Response) {
-    await this.authService.signOut(session, res);
-    return { authenticated: false };
+  async signOut(@TokenCookie() token: string, @Res() res: Response) {
+    await this.authService.signOut(token, res);
+    return;
   }
 
-  @HttpCode(HttpStatus.OK)
-  @ApiOperation({ summary: 'Check if User Authenticated' })
-  @ApiResponse({
-    status: HttpStatus.OK,
-    description: 'User has been successfully authenticated',
+  @UseGuards(AuthGuard)
+  @ApiOperation({
+    summary: 'Check Authentication',
+    description: 'Check if the user is authenticated',
   })
-  @Get('status')
-  status(@Session() session: UserSession) {
-    const isLoggedIn = session && session.user && session.authenticated;
-
-    if (isLoggedIn) {
-      // User is logged in
-      return { authenticated: true };
-    } else {
-      // User is not logged in
-      return { authenticated: false };
+  @HttpCode(HttpStatus.OK)
+  @Get('session')
+  @Get('session')
+  async session(@Req() request: Request) {
+    try {
+      console.log('request in controller ', request.cookies.token);
+      const result = await this.authService.session(request.cookies.token);
+      return result;
+    } catch (error) {
+      // Handle the error as needed
+      console.error('Error in session endpoint:', error.message);
+      return { error: 'An error occurred while processing your request.' };
     }
   }
 }
