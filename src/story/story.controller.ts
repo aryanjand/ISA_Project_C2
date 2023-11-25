@@ -27,14 +27,7 @@ export class StoryController {
   })
   @ApiForbiddenResponse({ description: 'Forbidden' })
   async getAllStories(@Req() request: Request): Promise<Story[]> {
-    // Assuming your service has a method to get all stories
-    console.log('request JASON', request.cookies.tokens);
-    return null;
-    // if (session.user.user_privilege !== 'ADMIN') {
-    //   throw new ForbiddenException('You must be an Admin');
-    // }
-
-    // const response = await this.storyService.getAllStories(session.user);
-    // return response;
+    const response = await this.storyService.getAllStories(request.cookies.token);
+    return response;
   }
 }
