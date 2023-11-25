@@ -8,9 +8,10 @@ import {
   Request as Req,
   Response as Res,
   Session,
+  UseGuards,
 } from '@nestjs/common';
 import { Response } from 'express';
-import { UserSession } from '../common';
+import { AuthGuard, UserSession } from '../common';
 import { AuthService } from './auth.service';
 import { UserDto } from './dto';
 import { ApiBody, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
@@ -104,10 +105,11 @@ export class AuthController {
     status: HttpStatus.OK,
     description: 'User has been successfully authenticated',
   })
+  @UseGuards(AuthGuard)
   @Get('status')
-  async status(@TokenCookie() token: string) {
+  async status(@TokenCookie() token: string, @Res() res: Response) {
     console.log("token", token);
-    const result = await this.authService.session(token);
+    const result = await this.authService.session(token, res);
     console.log("status", result);
     return result;
   }

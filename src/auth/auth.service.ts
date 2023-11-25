@@ -109,12 +109,15 @@ export class AuthService {
     }
   }
 
-  async session(token: string) {
+  async session(token: string, res: Response) {    
     if (!token) {
       return { authenticated: false };
     }
+    console.log("token", token);
     try {
-      await this.jwt.verifyAsync(token);
+      const result = await this.jwt.verifyAsync(token);
+      console.log("result from auth service", result);
+      
       return { authenticated: true };
     } catch (err) {
       return { authenticated: false };
