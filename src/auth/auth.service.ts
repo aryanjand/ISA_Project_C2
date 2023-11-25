@@ -1,7 +1,11 @@
-import { HttpException, HttpStatus, Injectable, InternalServerErrorException } from '@nestjs/common';
+import {
+  HttpStatus,
+  Injectable,
+  InternalServerErrorException,
+} from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import * as bcrypt from 'bcrypt';
-import { Response, Request } from 'express';
+import { Response } from 'express';
 import { UserSession, ValidationException } from '../common';
 import { PrismaService } from '../prisma/prisma.service';
 import { UserDto } from './dto';
@@ -48,6 +52,11 @@ export class AuthService {
     delete user.password;
 
     const token = await this.jwt.signAsync({ user });
+
+    console.log('Token User ', token);
+    console.log('User ', this.jwt.decode(token));
+    console.log('Token ', process.env.TOKEN_NAME);
+
     res.cookie(this.config.get<string>('TOKEN_NAME', 'aryan.sid'), token, {
       httpOnly: process.env.NODE_ENV === 'production',
       secure: process.env.NODE_ENV === 'production',
@@ -69,11 +78,15 @@ export class AuthService {
       delete user.password;
 
       const token = await this.jwt.signAsync({ user });
-      res.cookie(this.config.get<string>('TOKEN_NAME', 'aryan.sid'), token, {
-        httpOnly: process.env.NODE_ENV === 'production',
-        secure: process.env.NODE_ENV === 'production',
-        maxAge: 1000 * 60 * 60, // 1 hour
-      });
+      res.cookie(
+        this.config.get<string>('TOKEN_NAME', process.env.TOKEN_NAME),
+        token,
+        {
+          httpOnly: process.env.NODE_ENV === 'production',
+          secure: process.env.NODE_ENV === 'production',
+          maxAge: 1000 * 60 * 60, // 1 hour
+        },
+      );
 
       return;
     } catch (err) {
@@ -84,7 +97,7 @@ export class AuthService {
     }
   }
 
-  async signOut(token: string,  res: Response) {
+  async signOut(token: string, res: Response) {
     if (!token) return;
     try {
       await this.prisma.expiredJwt.create({
@@ -93,7 +106,7 @@ export class AuthService {
         },
       });
 
-      res.clearCookie(this.config.get('TOKEN_NAME', 'aryan.sid'), {
+      res.clearCookie(this.config.get('TOKEN_NAME', process.env.TOKEN_NAME), {
         path: '/',
       });
 

@@ -7,14 +7,14 @@ import {
   Post,
   Request as Req,
   Response as Res,
-  Session,
+  UseGuards,
 } from '@nestjs/common';
-import { Response } from 'express';
-import { UserSession } from '../common';
 import { AuthService } from './auth.service';
 import { UserDto } from './dto';
 import { ApiBody, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { TokenCookie } from 'src/common/decorators/token-cookie.decorator';
+import { AuthGuard } from '../common';
+import { Request, Response } from 'express';
 
 @ApiTags('User Authentication')
 @Controller()
@@ -40,16 +40,12 @@ export class AuthController {
     try {
       // Call your authentication service to sign in the user
       await this.authService.signIn(dto, response);
-
-      console.log('After the await');
     } catch (error) {
       // Handle authentication errors
       console.error('Authentication failed:', error);
       response.status(401).json({ error: 'Authentication failed.' }); // Set an appropriate HTTP status code
       return; // Return to exit the function
     }
-    console.log('After try and catch ');
-    // Return the session data in the response
     return;
   }
 
@@ -97,14 +93,23 @@ export class AuthController {
     return;
   }
 
-  @HttpCode(HttpStatus.OK)
-  @ApiOperation({ summary: 'Check if User Authenticated' })
-  @ApiResponse({
-    status: HttpStatus.OK,
-    description: 'User has been successfully authenticated',
+  @UseGuards(AuthGuard)
+  @ApiOperation({
+    summary: 'Check Authentication',
+    description: 'Check if the user is authenticated',
   })
-  @Get('status')
-  status(@TokenCookie() token: string) {
-    return this.authService.session(token);
+  @HttpCode(HttpStatus.OK)
+  @Get('session')
+  @Get('session')
+  async session(@Req() request: Request) {
+    try {
+      console.log('request in controller ', request.cookies.token);
+      const result = await this.authService.session(request.cookies.token);
+      return result;
+    } catch (error) {
+      // Handle the error as needed
+      console.error('Error in session endpoint:', error.message);
+      return { error: 'An error occurred while processing your request.' };
+    }
   }
 }
