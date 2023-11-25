@@ -12,7 +12,6 @@ export class StoryService {
   async getAllStories(token: string) {
     try {
       const {user} = await this.jwt.verifyAsync(token);
-      console.log(user);
       if (user.user_privilege !== 'ADMIN') {
         throw new ValidationException('Something went wrong');
       }
