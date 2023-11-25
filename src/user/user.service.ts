@@ -2,10 +2,13 @@ import { Injectable } from '@nestjs/common';
 import { User } from '@prisma/client';
 import { ValidationException } from '../common';
 import { PrismaService } from '../prisma/prisma.service';
+import { JwtService } from '@nestjs/jwt';
+
 
 @Injectable()
 export class UserService {
-  constructor(private prisma: PrismaService) {}
+  constructor(private prisma: PrismaService, private jwt: JwtService) {
+  }
 
   async getAllUsers(user: User) {
     try {
@@ -35,6 +38,18 @@ export class UserService {
         throw new ValidationException('Credentials taken');
       }
       throw new ValidationException('Something went wrong');
+    }
+  }
+
+  async getUserID(token: string) {
+    if (!token) {
+      return { authenticated: false };
+    }
+    try {
+      const info = await this.jwt.verifyAsync(token);
+      return info.user.id;
+    } catch (err) {
+      return { authenticated: false };
     }
   }
 }

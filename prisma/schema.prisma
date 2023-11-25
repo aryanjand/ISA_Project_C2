@@ -25,7 +25,7 @@ model User {
   user_privilege  UserType  @default(USER)
   api_calls_left  Int       @default(20)
 
-  stroy           Story[]
+  story           Story[]
 }
 
 model Story {
