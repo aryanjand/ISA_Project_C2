@@ -8,6 +8,7 @@ import { Request } from 'express';
 import { Request as Req } from '@nestjs/common';
 import { RequestsService } from 'src/requests/requests.service';
 import { UserService } from 'src/user/user.service';
+import { STORY_MESSAGES } from './story.constants';
 
 @ApiTags('story')
 @Controller('story')
@@ -22,10 +23,13 @@ export class StoryController {
   @Get('allStories')
   @ApiResponse({
     status: 200,
-    description: 'List of all stories',
+    description: STORY_MESSAGES.GETS_ALL_STORIES,
     type: StoryDto,
   })
-  @ApiForbiddenResponse({ description: 'Forbidden' })
+  @ApiForbiddenResponse({
+    status: 400,
+    description: STORY_MESSAGES.FORBIDDEN_STORY,
+  })
   async getAllStories(@Req() request: Request): Promise<Story[]> {
     const response = await this.storyService.getAllStories(
       request.cookies.token,
