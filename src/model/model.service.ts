@@ -1,4 +1,4 @@
-import { Injectable, InternalServerErrorException } from '@nestjs/common';
+import { HttpException, Injectable, InternalServerErrorException } from '@nestjs/common';
 import fetch from 'node-fetch';
 import { ValidationException } from '../common';
 import { PrismaService } from '../prisma/prisma.service';
@@ -6,6 +6,7 @@ import { Entity } from './types';
 import { JwtService } from '@nestjs/jwt';
 import { User } from '@prisma/client';
 import { MODAL_MESSAGES } from './modal.constants';
+import { ExceptionsHandler } from '@nestjs/core/exceptions/exceptions-handler';
 
 
 @Injectable()
@@ -79,6 +80,9 @@ export class ModelService {
       const {user} = await this.jwt.verifyAsync(token);
       return user;
     } catch (err) {
+      if (err.name === 'TokenExpiredError') {
+        throw new HttpException('Token Expired', 401)
+      }
       return { authenticated: false };
     }
   }

@@ -3,6 +3,7 @@ import { PrismaService } from '../prisma/prisma.service';
 import { ValidationException } from '../common';
 import { JwtService } from '@nestjs/jwt';
 import { STORY_MESSAGES } from './story.constants';
+import { HttpException } from '@nestjs/common/exceptions/http.exception';
 
 @Injectable()
 export class StoryService {
@@ -17,6 +18,9 @@ export class StoryService {
       const story = await this.prisma.story.findMany();
       return story;
     } catch (err) {
+      if (err.name === 'TokenExpiredError') {
+        throw new HttpException('Token Expired', 401)
+      }
       if (err.code === 'P2002') {
         throw new ValidationException(STORY_MESSAGES.CREDENTIALS_TAKEN_STORY);
       }

@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { HttpException, Injectable } from '@nestjs/common';
 import { User } from '@prisma/client';
 import { ValidationException } from '../common';
 import { PrismaService } from '../prisma/prisma.service';
@@ -31,6 +31,9 @@ export class UserService {
       };
       return true
     } catch (err) {
+      if (err.name === 'TokenExpiredError') {
+        throw new HttpException('Token Expired', 401)
+      }
       return false;
     }
   }
@@ -59,6 +62,9 @@ export class UserService {
       const info = await this.jwt.verifyAsync(token);
       return info.user.id;
     } catch (err) {
+      if (err.name === 'TokenExpiredError') {
+        throw new HttpException('Token Expired', 401)
+      }
       return { authenticated: false };
     }
   }
@@ -90,6 +96,9 @@ export class UserService {
       });
       return true;
     } catch (err) {
+      if (err.name === 'TokenExpiredError') {
+        throw new HttpException('Token Expired', 401)
+      }
       return false;
     }
   }

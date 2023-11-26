@@ -12,7 +12,6 @@ import { UserDto } from './dto';
 import { JwtService } from '@nestjs/jwt';
 import { AUTH_MESSAGES } from '../auth/auth.constants';
 
-
 @Injectable()
 export class AuthService {
   private readonly saltRounds: number;
@@ -55,13 +54,24 @@ export class AuthService {
 
     const token = await this.jwt.signAsync({ user });
 
-    res.cookie(this.config.get<string>(AUTH_MESSAGES.TOKEN_NAME_TEXT, process.env.TOKEN_NAME), token, {
-      httpOnly: process.env.NODE_ENV === AUTH_MESSAGES.PRODUCTION,
-      secure: process.env.NODE_ENV === AUTH_MESSAGES.PRODUCTION,
-      maxAge: 1000 * 60 * 60, // 1 hour
-    });
-    const userBundle = {username: user.username, privilege: user.user_privilege, api_calls: user.api_calls_left};
-    return { success: true, user: userBundle};
+    res.cookie(
+      this.config.get<string>(
+        AUTH_MESSAGES.TOKEN_NAME_TEXT,
+        process.env.TOKEN_NAME,
+      ),
+      token,
+      {
+        httpOnly: process.env.NODE_ENV === AUTH_MESSAGES.PRODUCTION,
+        secure: process.env.NODE_ENV === AUTH_MESSAGES.PRODUCTION,
+        maxAge: 1000 * 60 * 60, // 1 hour
+      },
+    );
+    const userBundle = {
+      username: user.username,
+      privilege: user.user_privilege,
+      api_calls: user.api_calls_left,
+    };
+    return { success: true, user: userBundle };
   }
 
   async signUp(dto: UserDto, res: Response) {
@@ -77,7 +87,10 @@ export class AuthService {
 
       const token = await this.jwt.signAsync({ user });
       res.cookie(
-        this.config.get<string>(AUTH_MESSAGES.TOKEN_NAME_TEXT, process.env.TOKEN_NAME),
+        this.config.get<string>(
+          AUTH_MESSAGES.TOKEN_NAME_TEXT,
+          process.env.TOKEN_NAME,
+        ),
         token,
         {
           httpOnly: process.env.NODE_ENV === AUTH_MESSAGES.PRODUCTION,
@@ -85,9 +98,12 @@ export class AuthService {
           maxAge: 1000 * 60 * 60, // 1 hour
         },
       );
-
-      const userBundle = {username: user.username, privilege: user.user_privilege, api_calls: user.api_calls_left};
-      return { success: true, user: userBundle};
+      const userBundle = {
+        username: user.username,
+        privilege: user.user_privilege,
+        api_calls: user.api_calls_left,
+      };
+      return { success: true, user: userBundle };
     } catch (err) {
       if (err.code === 'P2002') {
         throw new ValidationException(AUTH_MESSAGES.CREDENTAILS_TAKEN);
@@ -104,9 +120,14 @@ export class AuthService {
           token,
         },
       });
-
-      res.clearCookie(this.config.get(AUTH_MESSAGES.TOKEN_NAME_TEXT, process.env.TOKEN_NAME), {
+      const cookieName = this.config.get<string>(
+        AUTH_MESSAGES.TOKEN_NAME_TEXT,
+        process.env.TOKEN_NAME,
+      );
+      res.clearCookie(cookieName, {
         path: '/',
+        httpOnly: process.env.NODE_ENV === AUTH_MESSAGES.PRODUCTION,
+        secure: process.env.NODE_ENV === AUTH_MESSAGES.PRODUCTION,
       });
 
       return;
@@ -124,7 +145,11 @@ export class AuthService {
     }
     try {
       const info = await this.jwt.verifyAsync(token);
-      const user = { username: info.user.username, privilege: info.user.user_privilege, api_calls: info.user.api_calls_left};
+      const user = {
+        username: info.user.username,
+        privilege: info.user.user_privilege,
+        api_calls: info.user.api_calls_left,
+      };
       return { authenticated: true, user };
     } catch (err) {
       return { authenticated: false };
