@@ -5,18 +5,34 @@ import { PrismaService } from '../prisma/prisma.service';
 import { JwtService } from '@nestjs/jwt';
 import { USER_MESSAGES } from './user.constants';
 
-
 @Injectable()
 export class UserService {
-  constructor(private prisma: PrismaService, private jwt: JwtService) {
+  constructor(private prisma: PrismaService, private jwt: JwtService) {}
+
+  async decrementApiCallsLeft(user_id: number) {
+    try {
+      await this.prisma.user.update({
+        where: {
+          id: user_id,
+        },
+        data: {
+          api_calls_left: {
+            decrement: 1,
+          },
+        },
+      });
+    } catch (err) {
+      return false;
+    }
+    return true;
   }
 
   async updateStory(story_id: number, story_text: string, token: string) {
     if (!token) {
-      return false;
+      throw new HttpException('Token not found', 401);
     }
     try {
-      const {user} = await this.jwt.verifyAsync(token);
+      const { user } = await this.jwt.verifyAsync(token);
       const story = await this.prisma.story.update({
         where: {
           id: story_id,
@@ -28,11 +44,12 @@ export class UserService {
       });
       if (!story) {
         throw new ValidationException(USER_MESSAGES.NO_STORY_FOUND);
-      };
-      return true
+      }
+      await this.decrementApiCallsLeft(user.id);
+      return true;
     } catch (err) {
       if (err.name === 'TokenExpiredError') {
-        throw new HttpException('Token Expired', 401)
+        throw new HttpException('Token Expired', 401);
       }
       return false;
     }
@@ -55,21 +72,18 @@ export class UserService {
   }
 
   async getUserID(token: string) {
-    if (!token) {
-      return { authenticated: false };
-    }
     try {
       const info = await this.jwt.verifyAsync(token);
       return info.user.id;
     } catch (err) {
       if (err.name === 'TokenExpiredError') {
-        throw new HttpException('Token Expired', 401)
+        throw new HttpException('Token Expired', 401);
       }
       return { authenticated: false };
     }
   }
 
-  async getAllUsers () {
+  async getAllUsers() {
     try {
       const users = await this.prisma.user.findMany();
       return users;
@@ -79,11 +93,8 @@ export class UserService {
   }
 
   async incrementTotalRequests(token: string) {
-    if (!token) {
-      return false;
-    }
     try {
-      const {user} = await this.jwt.verifyAsync(token);
+      const { user } = await this.jwt.verifyAsync(token);
       await this.prisma.user.update({
         where: {
           id: user.id,
@@ -97,9 +108,18 @@ export class UserService {
       return true;
     } catch (err) {
       if (err.name === 'TokenExpiredError') {
-        throw new HttpException('Token Expired', 401)
+        throw new HttpException('Token Expired', 401);
       }
       return false;
     }
+  }
+
+  async isNoApiCallsLeft(user_id: number): Promise<Boolean> {
+    const user_info = await this.prisma.user.findUnique({
+      where: {
+        id: user_id,
+      },
+    });
+    return user_info.api_calls_left <= 0;
   }
 }

@@ -33,7 +33,7 @@ export class ModelController {
     @Query('description') description: string,
   ): Promise<{ prompt: string }> {
     const user = await this.modelService.getUser(request.cookies.token);
-    if (user.api_calls_left <= 0) {
+    if (await this.userService.isNoApiCallsLeft(user.id)) {
       throw new HttpException('No more API Calls left!', 405);
     }
     const tokens = await this.modelService.identifyTokens(description);
