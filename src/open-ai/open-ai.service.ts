@@ -1,15 +1,17 @@
 import { Injectable, Global } from '@nestjs/common';
 import OpenAI from 'openai';
+import { Entity } from 'src/model/types';
 
 @Global()
 @Injectable()
 export class OpenAiService {
-  async openAiResponse(prompt: String): Promise<{prompt: string}> {
+  async openAiResponse(model_tokens: Entity[]): Promise<{prompt: string}> {
     try {
       const openai = new OpenAI({
         apiKey: process.env.OPENAI_API_KEY,
       });
-
+      const parsed_tokens = model_tokens.map((token) => JSON.stringify(token)).join(', ');
+      const prompt = `You are a PG-13 fantasy story writer.\n\nWrite a 150 character fantasy story based on these key words, keep it short: ${parsed_tokens}\n\n###\n\n`;
       const response = await openai.chat.completions.create({
         model: 'gpt-3.5-turbo',
         messages: [
@@ -19,7 +21,7 @@ export class OpenAiService {
           },
           {
             role: 'user',
-            content: `Write a 150 character fantasy story based on these key words, keep it short: ${prompt}`,
+            content: prompt,
           },
         ],
         temperature: 0.8,

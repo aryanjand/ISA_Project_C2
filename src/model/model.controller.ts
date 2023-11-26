@@ -28,7 +28,7 @@ export class ModelController {
       return;
     }
     const tokens = await this.modelService.identifyTokens(description);
-    const generatedText = await this.openaiService.openAiResponse(tokens.join(' '));
+    const generatedText = await this.openaiService.openAiResponse(tokens);
     const success = await this.modelService.storeStory(user, generatedText, description);
     this.requestService.incrementRequest('/model/GenerateStory', 'GET');
     if (success) {
