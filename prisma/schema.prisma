@@ -24,6 +24,7 @@ model User {
   password        String    @db.VarChar(255)
   user_privilege  UserType  @default(USER)
   api_calls_left  Int       @default(20)
+  total_requests  Int       @default(0)
 
   story           Story[]
 }
@@ -45,4 +46,11 @@ model ExpiredJwt {
   updated_at DateTime @updatedAt
   
   token      String   @db.VarChar(400) @unique
+}
+
+model Requests {
+  id Int @id @default(autoincrement ())
+  method String @db.VarChar(15)
+  endpoint String @db.VarChar(50)
+  total Int @default(0)
 }
