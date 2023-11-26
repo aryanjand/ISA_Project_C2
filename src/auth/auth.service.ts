@@ -58,7 +58,6 @@ export class AuthService {
       AUTH_MESSAGES.TOKEN_NAME_TEXT,
       process.env.TOKEN_NAME,
     );
-    console.log(token, cookieName);
     res.cookie(cookieName, token, {
       path: '/',
       httpOnly: process.env.NODE_ENV === AUTH_MESSAGES.PRODUCTION,

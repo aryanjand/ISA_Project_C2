@@ -30,7 +30,6 @@ export class RequestsService {
   async checkEndpoint(endpoint: string, method: string): Promise<boolean> {
     try {
       const isExists = await this.isEndpointExists(endpoint, method);
-      console.log(isExists);
       if (!isExists) {
         await this.createEndpoint(endpoint, method);
       }

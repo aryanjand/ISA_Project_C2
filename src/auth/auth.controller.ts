@@ -105,7 +105,6 @@ export class AuthController {
   @HttpCode(HttpStatus.OK)
   @Get('session')
   async session(@Req() request: Request) {
-    console.log(request.cookies.token);
     this.requestsService.incrementRequest('/session', 'GET');
     const result = await this.authService.session(request.cookies.token);
     this.userService.incrementTotalRequests(request.cookies.token);

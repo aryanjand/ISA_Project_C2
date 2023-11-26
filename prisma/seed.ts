@@ -31,7 +31,6 @@ async function main() {
     },
   });
 
-  console.log({ dummy, brian, aryan });
 }
 
 main()
