@@ -24,7 +24,7 @@ export class AuthController {
   constructor(private authService: AuthService, private readonly requestsService: RequestsService) {}
 
   @HttpCode(HttpStatus.OK)
-  @ApiOperation({ summary: 'Authenticating User' })
+  @ApiOperation({ summary: AUTH_MESSAGES.AUTH_USER })
   @ApiResponse({
     status: 201,
     description: AUTH_MESSAGES.SUCCESSFUL_LOGIN,
@@ -32,7 +32,7 @@ export class AuthController {
   @ApiResponse({ status: 403, description: AUTH_MESSAGES.FORBIDDEN })
   @ApiBody({
     type: UserDto,
-    description: 'User Object loaded in Session Object',
+    description: AUTH_MESSAGES.OBJECT_LOADED_IN_SESSION,
   })
   @Post('signin')
   async signIn(
@@ -44,14 +44,14 @@ export class AuthController {
       const result = await this.authService.signIn(dto, response);
       return result;
     } catch (error) {
-      console.error('Authentication failed:', error);
+      console.error(AUTH_MESSAGES.AUTH_FAILED, error);
       response.status(401).json({ error: AUTH_MESSAGES.AUTHENTICATION_FAILED });
       return;
     }
   }
 
   @HttpCode(HttpStatus.CREATED)
-  @ApiOperation({ summary: 'Creating a new user' })
+  @ApiOperation({ summary: AUTH_MESSAGES.CREATING_NEW_USER })
   @ApiResponse({
     status: HttpStatus.CREATED,
     description: AUTH_MESSAGES.SUCCESSFUL_SIGNUP,
@@ -59,7 +59,7 @@ export class AuthController {
   @ApiResponse({ status: HttpStatus.FORBIDDEN, description: AUTH_MESSAGES.FORBIDDEN })
   @ApiBody({
     type: UserDto,
-    description: 'User Object loaded in Session Object',
+    description: AUTH_MESSAGES.OBJECT_LOADED_IN_SESSION,
   })
   @Post('signup')
   async signUp(
@@ -71,14 +71,14 @@ export class AuthController {
       const result = await this.authService.signUp(dto, response);
       return result;
     } catch (error) {
-      console.error('Authentication failed:', error);
+      console.error(AUTH_MESSAGES.AUTH_FAILED, error);
       response.status(401).json({ error: AUTH_MESSAGES.AUTHENTICATION_FAILED });
       return; 
     }
   }
 
   @HttpCode(HttpStatus.OK)
-  @ApiOperation({ summary: 'Signing out a user' })
+  @ApiOperation({ summary: AUTH_MESSAGES.SIGNING_OUT_USER })
   @ApiResponse({
     status: HttpStatus.OK,
     description: AUTH_MESSAGES.SUCCESSFUL_SIGNOUT,
@@ -92,8 +92,8 @@ export class AuthController {
 
   @UseGuards(AuthGuard)
   @ApiOperation({
-    summary: 'Check Authentication',
-    description: 'Check if the user is authenticated',
+    summary: AUTH_MESSAGES.CHECKING_AUTHENTICATION,
+    description: AUTH_MESSAGES.CHECKING_USER_IF_AUTHENTICATION,
   })
   @HttpCode(HttpStatus.OK)
   @Get('session')
@@ -104,7 +104,7 @@ export class AuthController {
       const result = await this.authService.session(request.cookies.token);
       return result;
     } catch (error) {
-      console.error('Error in session endpoint:', error.message);
+      console.error(AUTH_MESSAGES.ERROR_IN_SESSION_ENDPOINT, error.message);
       return { error: AUTH_MESSAGES.ERROR_PROCESSING_REQUEST };
     }
   }

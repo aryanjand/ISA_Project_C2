@@ -4,7 +4,6 @@ import {
   ExceptionFilter,
   HttpException,
 } from '@nestjs/common';
-import { RouteTree } from '@nestjs/core';
 import { Request, Response } from 'express';
 
 @Catch(HttpException)
