@@ -17,6 +17,8 @@ import { UserController } from './user/user.controller';
 import { UserModule } from './user/user.module';
 import { StoryModule } from './story/story.module';
 import { AdminController } from './admin/admin.controller';
+import { AdminModule } from './admin/admin.module';
+import { AdminService } from './admin/admin.service';
 
 @Module({
   imports: [
@@ -32,6 +34,7 @@ import { AdminController } from './admin/admin.controller';
     ModelModule,
     UserModule,
     StoryModule,
+    AdminModule,
   ],
   controllers: [AppController, OpenAiController, UserController, AdminController],
   providers: [
@@ -41,6 +44,7 @@ import { AdminController } from './admin/admin.controller';
     },
     OpenAiService,
     UserService,
+    AdminService,
   ],
 })
 export class AppModule {}
