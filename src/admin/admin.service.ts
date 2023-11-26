@@ -21,4 +21,9 @@ export class AdminService {
         }
         return;
     }
+
+    async isAdmin(token: string): Promise<boolean> {
+        const { user } = await this.jwt.verifyAsync(token);
+        return user.user_privilege === 'ADMIN';
+    }
 }

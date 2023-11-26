@@ -1,5 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
+import {Requests} from '@prisma/client';
 
 @Injectable()
 export class RequestsService {
@@ -63,6 +64,15 @@ export class RequestsService {
       return true;
     } catch (err) {
       return false;
+    }
+  }
+
+  async getRequests(): Promise<Requests[]> {
+    try {
+      const requests = await this.prisma.requests.findMany();
+      return requests;
+    } catch (err) {
+      return null;
     }
   }
 }

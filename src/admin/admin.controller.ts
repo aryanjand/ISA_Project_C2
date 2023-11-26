@@ -3,6 +3,7 @@ import {
     Delete,
     Param,
     UseGuards,
+    Get,
     Request as Req,
 } from '@nestjs/common';
 import { ApiForbiddenResponse, ApiResponse, ApiTags, ApiNotFoundResponse } from '@nestjs/swagger';
@@ -30,5 +31,22 @@ export class AdminController {
         this.requestsServices.incrementRequest('/admin/story/:story_id', 'DELETE');
         await this.adminService.deleteStory(request.cookies.token, story_id);
         return;
+    }
+
+
+    @UseGuards(AuthGuard)
+    @Get('/endpoints')
+    @ApiResponse({
+        status: 200,
+        description: 'Get all endpoints',
+    })
+    @ApiForbiddenResponse({ description: ADMIN_ERROR_MESSAGES.FORBIDDEN })
+    async getEndpoints(@Req() request: Request): Promise<any> {
+        this.requestsServices.incrementRequest('/admin/endpoints', 'GET');
+        const isAdmin = this.adminService.isAdmin(request.cookies.token);
+        if (!isAdmin) {
+            return { error: ADMIN_ERROR_MESSAGES.FORBIDDEN };
+        }
+        return await this.requestsServices.getRequests();
     }
 }
