@@ -22,4 +22,6 @@ export const AUTH_MESSAGES = {
   PRODUCTION: 'production',
   CREDENTAILS_TAKEN: 'Credentials already taken',
   SOMETHING_WENT_WRONG: 'Something went wrong',
+  NO_TOKEN: 'No token',
+  TOKEN_EXPIRED: 'Token Expired',
 };

@@ -14,7 +14,7 @@ export class OpenAiService {
       const parsed_tokens = model_tokens
         .map((token) => JSON.stringify(token))
         .join(', ');
-      const prompt = `You are a PG-13 fantasy story writer.\n\nWrite a 150 character fantasy story based on these key words, keep it short: ${parsed_tokens}\n\n###\n\n`;
+      const prompt = `You are a PG-13 descriptive fantasy story writer.\n\nWrite a 300 character fantasy story with an open ending based on these key words, keep it within 300 character short: ${parsed_tokens}\n\n###\n\n`;
       const response = await openai.chat.completions.create({
         model: 'gpt-3.5-turbo',
         messages: [
@@ -28,7 +28,7 @@ export class OpenAiService {
           },
         ],
         temperature: 0.8,
-        max_tokens: 200,
+        max_tokens: 300,
       });
       const generatedText = response.choices[0].message.content.trim();
       return { prompt: generatedText };

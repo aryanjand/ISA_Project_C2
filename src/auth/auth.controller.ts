@@ -7,12 +7,10 @@ import {
   Post,
   Request as Req,
   Response as Res,
-  UseGuards,
 } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { UserDto } from './dto';
 import { ApiBody, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
-import { AuthGuard } from '../common';
 import { Request, Response } from 'express';
 import { AUTH_MESSAGES } from '../auth/auth.constants';
 import { RequestsService } from 'src/requests/requests.service';

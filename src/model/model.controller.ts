@@ -34,7 +34,7 @@ export class ModelController {
   ): Promise<{ prompt: string }> {
     const user = await this.modelService.getUser(request.cookies.token);
     if (await this.userService.isNoApiCallsLeft(user.id)) {
-      throw new HttpException('No more API Calls left!', 405);
+      throw new HttpException(MODAL_MESSAGES.NO_MORE_API_CALLS, 405);
     }
     const tokens = await this.modelService.identifyTokens(description);
     const generatedText = await this.openaiService.openAiResponse(tokens);

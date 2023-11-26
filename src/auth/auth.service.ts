@@ -12,7 +12,6 @@ import { PrismaService } from '../prisma/prisma.service';
 import { UserDto } from './dto';
 import { JwtService } from '@nestjs/jwt';
 import { AUTH_MESSAGES } from '../auth/auth.constants';
-import path from 'path';
 
 @Injectable()
 export class AuthService {
@@ -145,7 +144,7 @@ export class AuthService {
 
   async session(token: string) {
     if (!token) {
-      throw new HttpException('No token', 403);
+      throw new HttpException(AUTH_MESSAGES.NO_TOKEN, 403);
     }
     try {
       const info = await this.jwt.verifyAsync(token);
@@ -157,7 +156,7 @@ export class AuthService {
       return { authenticated: true, user };
     } catch (err) {
       if (err.name === 'TokenExpiredError') {
-        throw new HttpException('Token Expired', 401);
+        throw new HttpException(AUTH_MESSAGES.TOKEN_EXPIRED, 401);
       }
     }
   }

@@ -24,8 +24,8 @@ export class AdminService {
         where: { id: parseInt(story_id) },
       });
     } catch (error) {
-      if (error.name === 'TokenExpiredError') {
-        throw new HttpException('Token Expired', 401);
+      if (error.name === ADMIN_ERROR_MESSAGES.TOKEN_EXPIRED_ERROR) {
+        throw new HttpException(ADMIN_ERROR_MESSAGES.TOKEN_EXPRIED_TEXT, 401);
       }
       throw new NotFoundException(ADMIN_ERROR_MESSAGES.STORY_NOT_FOUND);
     }
@@ -37,8 +37,8 @@ export class AdminService {
       const { user } = await this.jwt.verifyAsync(token);
       return user.user_privilege === 'ADMIN';
     } catch (error) {
-      if (error.name === 'TokenExpiredError') {
-        throw new HttpException('Token Expired', 401);
+      if (error.name === ADMIN_ERROR_MESSAGES.TOKEN_EXPIRED_ERROR) {
+        throw new HttpException(ADMIN_ERROR_MESSAGES.TOKEN_EXPRIED_TEXT, 401);
       }
     }
   }

@@ -10,7 +10,6 @@ import { Entity } from './types';
 import { JwtService } from '@nestjs/jwt';
 import { User } from '@prisma/client';
 import { MODAL_MESSAGES } from './modal.constants';
-import { ExceptionsHandler } from '@nestjs/core/exceptions/exceptions-handler';
 
 @Injectable()
 export class ModelService {
@@ -82,7 +81,7 @@ export class ModelService {
       return user;
     } catch (err) {
       if (err.name === 'TokenExpiredError') {
-        throw new HttpException('Token Expired', 401);
+        throw new HttpException(MODAL_MESSAGES.TOKEN_EXPIRED, 401);
       }
       return { authenticated: false };
     }

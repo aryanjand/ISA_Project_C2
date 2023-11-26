@@ -29,7 +29,7 @@ export class UserService {
 
   async updateStory(story_id: number, story_text: string, token: string) {
     if (!token) {
-      throw new HttpException('Token not found', 401);
+      throw new HttpException(USER_MESSAGES.TOKEN_NOT_FOUND, 401);
     }
     try {
       const { user } = await this.jwt.verifyAsync(token);
@@ -49,7 +49,7 @@ export class UserService {
       return true;
     } catch (err) {
       if (err.name === 'TokenExpiredError') {
-        throw new HttpException('Token Expired', 401);
+        throw new HttpException(USER_MESSAGES.TOKEN_EXPIRED, 401);
       }
       return false;
     }
@@ -77,7 +77,7 @@ export class UserService {
       return info.user.id;
     } catch (err) {
       if (err.name === 'TokenExpiredError') {
-        throw new HttpException('Token Expired', 401);
+        throw new HttpException(USER_MESSAGES.TOKEN_EXPIRED, 401);
       }
       return { authenticated: false };
     }
@@ -108,7 +108,7 @@ export class UserService {
       return true;
     } catch (err) {
       if (err.name === 'TokenExpiredError') {
-        throw new HttpException('Token Expired', 401);
+        throw new HttpException(USER_MESSAGES.TOKEN_EXPIRED, 401);
       }
       return false;
     }

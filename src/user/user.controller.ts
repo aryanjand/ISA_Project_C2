@@ -22,6 +22,7 @@ import { StoryDto } from 'src/story/dto';
 import { Request } from 'express';
 import { EditStory } from './dto';
 import { RequestsService } from 'src/requests/requests.service';
+import { USER_MESSAGES } from './user.constants';
 
 @ApiTags('user')
 @Controller('user')
@@ -51,7 +52,7 @@ export class UserController {
       request.cookies.token,
     );
     if (!response) {
-      throw new ForbiddenException('Forbidden');
+      throw new ForbiddenException(USER_MESSAGES.FORBIDDEN);
     }
     this.requestService.incrementRequest('/user/editLore', 'PATCH');
     this.userService.incrementTotalRequests(request.cookies.token);

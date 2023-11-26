@@ -21,7 +21,7 @@ export class StoryService {
       return story;
     } catch (err) {
       if (err.name === 'TokenExpiredError') {
-        throw new HttpException('Token Expired', 401);
+        throw new HttpException(STORY_MESSAGES.TOKEN_EXPIRED, 401);
       }
       if (err.code === 'P2002') {
         throw new ValidationException(STORY_MESSAGES.CREDENTIALS_TAKEN_STORY);
