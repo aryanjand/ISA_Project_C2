@@ -4,6 +4,7 @@ import {
   HttpException,
   Query,
   Request as Req,
+  UseGuards,
 } from '@nestjs/common';
 import { ApiQuery } from '@nestjs/swagger';
 import { ModelService } from './model.service';
@@ -12,6 +13,7 @@ import { Request } from 'express';
 import { RequestsService } from 'src/requests/requests.service';
 import { UserService } from 'src/user/user.service';
 import { MODAL_MESSAGES } from './modal.constants';
+import { AuthGuard } from 'src/common';
 
 @Controller('model')
 export class ModelController {
@@ -22,6 +24,7 @@ export class ModelController {
     private readonly userService: UserService,
   ) {}
 
+  @UseGuards(AuthGuard)
   @Get('GenerateStory')
   @ApiQuery({
     name: MODAL_MESSAGES.DESCRIPTION,

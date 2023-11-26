@@ -23,6 +23,7 @@ import { Request } from 'express';
 import { EditStory } from './dto';
 import { RequestsService } from 'src/requests/requests.service';
 import { USER_MESSAGES } from './user.constants';
+import { STORY_MESSAGES } from 'src/story/story.constants';
 
 @ApiTags('user')
 @Controller('user')
@@ -32,16 +33,17 @@ export class UserController {
     private readonly requestService: RequestsService,
   ) {}
 
+  @UseGuards(AuthGuard)
   @HttpCode(HttpStatus.OK)
-  @ApiOperation({ summary: 'Authenticating User' })
+  @ApiOperation({ summary: STORY_MESSAGES.EDITS_STROY })
   @ApiResponse({
     status: 201,
-    description: 'User has been successfully Logged-In.',
+    description: STORY_MESSAGES.EDITS_STROY,
   })
-  @ApiResponse({ status: 403, description: 'Forbidden.' })
+  @ApiResponse({ status: 403, description: STORY_MESSAGES.FORBIDDEN_STORY })
   @ApiBody({
-    type: EditStory,
-    description: 'User Object loaded in Session Object',
+    type: Request,
+    description: STORY_MESSAGES.REQUEST_OBJECT,
   })
   @Patch('editLore')
   async editStory(@Req() request: Request): Promise<boolean> {
@@ -60,13 +62,14 @@ export class UserController {
   }
 
   @UseGuards(AuthGuard)
+  @ApiOperation({ summary: STORY_MESSAGES.GENERATE_STORY })
   @Get('/userLores')
   @ApiResponse({
     status: 200,
     description: 'List of all stories for a user.',
     type: StoryDto,
   })
-  @ApiForbiddenResponse({ description: 'Forbidden' })
+  @ApiForbiddenResponse({ status: 200, description: USER_MESSAGES.FORBIDDEN })
   async getStoryForUser(@Req() request: Request): Promise<Story[]> {
     const user = await this.userService.getUserID(request.cookies.token);
     const response = await this.userService.getStoryForUser(user);
