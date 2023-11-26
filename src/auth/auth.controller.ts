@@ -16,11 +16,12 @@ import { TokenCookie } from 'src/common/decorators/token-cookie.decorator';
 import { AuthGuard } from '../common';
 import { Request, Response } from 'express';
 import { AUTH_MESSAGES } from '../auth/auth.constants';
+import { RequestsService } from 'src/requests/requests.service';
 
 @ApiTags('User Authentication')
 @Controller()
 export class AuthController {
-  constructor(private authService: AuthService) {}
+  constructor(private authService: AuthService, private readonly requestsService: RequestsService) {}
 
   @HttpCode(HttpStatus.OK)
   @ApiOperation({ summary: 'Authenticating User' })
@@ -39,6 +40,7 @@ export class AuthController {
     @Res({ passthrough: true }) response: Response,
   ) {
     try {
+      this.requestsService.incrementRequest('/signin', 'POST');
       const result = await this.authService.signIn(dto, response);
       return result;
     } catch (error) {
@@ -65,6 +67,7 @@ export class AuthController {
     @Res({ passthrough: true }) response: Response,
   ) {
     try {
+      this.requestsService.incrementRequest('/signup', 'POST');
       const result = await this.authService.signUp(dto, response);
       return result;
     } catch (error) {
@@ -82,6 +85,7 @@ export class AuthController {
   })
   @Get('signout')
   async signOut(@TokenCookie() token: string, @Res() res: Response) {
+    this.requestsService.incrementRequest('/signout', 'GET');
     await this.authService.signOut(token, res);
     return;
   }
@@ -96,7 +100,7 @@ export class AuthController {
   @Get('session')
   async session(@Req() request: Request) {
     try {
-      console.log('request in controller ', request.cookies.token);
+      this.requestsService.incrementRequest('/session', 'GET');
       const result = await this.authService.session(request.cookies.token);
       return result;
     } catch (error) {

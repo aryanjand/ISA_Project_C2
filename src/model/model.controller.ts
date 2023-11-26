@@ -3,12 +3,14 @@ import { ApiQuery } from '@nestjs/swagger';
 import { ModelService } from './model.service';
 import { OpenAiService } from '../open-ai/open-ai.service';
 import {Request} from 'express';
+import { RequestsService } from 'src/requests/requests.service';
 
 @Controller('model')
 export class ModelController {
   constructor(
     private readonly modelService: ModelService,
     private readonly openaiService: OpenAiService,
+    private readonly requestService: RequestsService,
   ) {}
 
   @Get('GenerateStory')
@@ -28,6 +30,7 @@ export class ModelController {
     const tokens = await this.modelService.identifyTokens(description);
     const generatedText = await this.openaiService.openAiResponse(tokens.join(' '));
     const success = await this.modelService.storeStory(user, generatedText, description);
+    this.requestService.incrementRequest('/model/GenerateStory', 'GET');
     if (success) {
       return generatedText;
     }
