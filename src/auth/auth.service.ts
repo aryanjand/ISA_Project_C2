@@ -61,7 +61,7 @@ export class AuthService {
     res.cookie(cookieName, token, {
       path: '/',
       sameSite: 'none',
-      httpOnly: process.env.NODE_ENV === AUTH_MESSAGES.PRODUCTION,
+      httpOnly: true,
       secure: true,
       maxAge: 1000 * 60 * 60, // 1 hour
     });
@@ -94,7 +94,7 @@ export class AuthService {
         {
           sameSite: 'none',
           path: '/',
-          httpOnly: process.env.NODE_ENV == AUTH_MESSAGES.PRODUCTION,
+          httpOnly: true,
           secure: true,
           maxAge: 1000 * 60 * 60, // 1 hour
         },
@@ -125,7 +125,7 @@ export class AuthService {
       res.clearCookie(cookieName, {
         path: '/',
         sameSite: 'none',
-        httpOnly: process.env.NODE_ENV === AUTH_MESSAGES.PRODUCTION,
+        httpOnly: true,
         secure: true,
       });
 
