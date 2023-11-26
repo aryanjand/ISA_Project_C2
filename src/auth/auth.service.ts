@@ -1,4 +1,5 @@
 import {
+  HttpException,
   HttpStatus,
   Injectable,
   InternalServerErrorException,
@@ -11,6 +12,7 @@ import { PrismaService } from '../prisma/prisma.service';
 import { UserDto } from './dto';
 import { JwtService } from '@nestjs/jwt';
 import { AUTH_MESSAGES } from '../auth/auth.constants';
+import path from 'path';
 
 @Injectable()
 export class AuthService {
@@ -53,19 +55,17 @@ export class AuthService {
     delete user.password;
 
     const token = await this.jwt.signAsync({ user });
-
-    res.cookie(
-      this.config.get<string>(
-        AUTH_MESSAGES.TOKEN_NAME_TEXT,
-        process.env.TOKEN_NAME,
-      ),
-      token,
-      {
-        httpOnly: process.env.NODE_ENV === AUTH_MESSAGES.PRODUCTION,
-        secure: process.env.NODE_ENV === AUTH_MESSAGES.PRODUCTION,
-        maxAge: 1000 * 60 * 60, // 1 hour
-      },
+    const cookieName = this.config.get<string>(
+      AUTH_MESSAGES.TOKEN_NAME_TEXT,
+      process.env.TOKEN_NAME,
     );
+    console.log(token, cookieName);
+    res.cookie(cookieName, token, {
+      path: '/',
+      httpOnly: process.env.NODE_ENV === AUTH_MESSAGES.PRODUCTION,
+      secure: process.env.NODE_ENV === AUTH_MESSAGES.PRODUCTION,
+      maxAge: 1000 * 60 * 60, // 1 hour
+    });
     const userBundle = {
       username: user.username,
       privilege: user.user_privilege,
@@ -79,7 +79,7 @@ export class AuthService {
       const user = await this.prisma.user.create({
         data: {
           username: dto.username,
-          password: bcrypt.hashSync(dto.password, this.saltRounds),
+          password: await bcrypt.hashSync(dto.password, this.saltRounds),
         },
       });
 
@@ -93,7 +93,8 @@ export class AuthService {
         ),
         token,
         {
-          httpOnly: process.env.NODE_ENV === AUTH_MESSAGES.PRODUCTION,
+          path: '/',
+          httpOnly: process.env.NODE_ENV == AUTH_MESSAGES.PRODUCTION,
           secure: process.env.NODE_ENV === AUTH_MESSAGES.PRODUCTION,
           maxAge: 1000 * 60 * 60, // 1 hour
         },
@@ -105,6 +106,7 @@ export class AuthService {
       };
       return { success: true, user: userBundle };
     } catch (err) {
+      console.error(err);
       if (err.code === 'P2002') {
         throw new ValidationException(AUTH_MESSAGES.CREDENTAILS_TAKEN);
       }
@@ -115,19 +117,21 @@ export class AuthService {
   async signOut(token: string, res: Response) {
     if (!token) return;
     try {
-      await this.prisma.expiredJwt.create({
-        data: {
-          token,
-        },
-      });
       const cookieName = this.config.get<string>(
         AUTH_MESSAGES.TOKEN_NAME_TEXT,
         process.env.TOKEN_NAME,
       );
+
       res.clearCookie(cookieName, {
         path: '/',
         httpOnly: process.env.NODE_ENV === AUTH_MESSAGES.PRODUCTION,
         secure: process.env.NODE_ENV === AUTH_MESSAGES.PRODUCTION,
+      });
+
+      await this.prisma.expiredJwt.create({
+        data: {
+          token,
+        },
       });
 
       return;
@@ -141,7 +145,7 @@ export class AuthService {
 
   async session(token: string) {
     if (!token) {
-      return { authenticated: false };
+      throw new HttpException('No token', 403);
     }
     try {
       const info = await this.jwt.verifyAsync(token);
@@ -152,7 +156,9 @@ export class AuthService {
       };
       return { authenticated: true, user };
     } catch (err) {
-      return { authenticated: false };
+      if (err.name === 'TokenExpiredError') {
+        throw new HttpException('Token Expired', 401);
+      }
     }
   }
 }
