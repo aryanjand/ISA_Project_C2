@@ -32,7 +32,7 @@ export class AdminController {
   @Delete('story/:story_id')
   @ApiResponse({
     status: 200,
-    description: 'Delete a story',
+    description: ADMIN_ERROR_MESSAGES.ADMIN_STORY_DELETED,
   })
   @ApiForbiddenResponse({ description: ADMIN_ERROR_MESSAGES.FORBIDDEN })
   @ApiNotFoundResponse({ description: ADMIN_ERROR_MESSAGES.STORY_NOT_FOUND })
@@ -50,7 +50,7 @@ export class AdminController {
   @Get('/endpoints')
   @ApiResponse({
     status: 200,
-    description: 'Get all endpoints',
+    description: ADMIN_ERROR_MESSAGES.GET_ALL_ENDPOINTS,
   })
   @ApiForbiddenResponse({ description: ADMIN_ERROR_MESSAGES.FORBIDDEN })
   async getEndpoints(@Req() request: Request): Promise<any> {
@@ -67,7 +67,7 @@ export class AdminController {
   @Get('/users')
   @ApiResponse({
     status: 200,
-    description: 'Get all users',
+    description: ADMIN_ERROR_MESSAGES.GET_ALL_USERS,
   })
   @ApiForbiddenResponse({ description: ADMIN_ERROR_MESSAGES.FORBIDDEN })
   async getUsers(@Req() request: Request): Promise<any> {
