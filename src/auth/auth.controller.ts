@@ -12,7 +12,6 @@ import {
 import { AuthService } from './auth.service';
 import { UserDto } from './dto';
 import { ApiBody, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
-import { TokenCookie } from 'src/common/decorators/token-cookie.decorator';
 import { AuthGuard } from '../common';
 import { Request, Response } from 'express';
 import { AUTH_MESSAGES } from '../auth/auth.constants';
@@ -23,9 +22,10 @@ import { UserService } from 'src/user/user.service';
 @Controller()
 export class AuthController {
   constructor(
-    private authService: AuthService, 
+    private authService: AuthService,
     private readonly requestsService: RequestsService,
-    private readonly userService: UserService) {}
+    private readonly userService: UserService,
+  ) {}
 
   @HttpCode(HttpStatus.OK)
   @ApiOperation({ summary: AUTH_MESSAGES.AUTH_USER })
@@ -60,7 +60,10 @@ export class AuthController {
     status: HttpStatus.CREATED,
     description: AUTH_MESSAGES.SUCCESSFUL_SIGNUP,
   })
-  @ApiResponse({ status: HttpStatus.FORBIDDEN, description: AUTH_MESSAGES.FORBIDDEN })
+  @ApiResponse({
+    status: HttpStatus.FORBIDDEN,
+    description: AUTH_MESSAGES.FORBIDDEN,
+  })
   @ApiBody({
     type: UserDto,
     description: AUTH_MESSAGES.OBJECT_LOADED_IN_SESSION,
@@ -77,7 +80,7 @@ export class AuthController {
     } catch (error) {
       console.error(AUTH_MESSAGES.AUTH_FAILED, error);
       response.status(401).json({ error: AUTH_MESSAGES.AUTHENTICATION_FAILED });
-      return; 
+      return;
     }
   }
 
@@ -88,10 +91,10 @@ export class AuthController {
     description: AUTH_MESSAGES.SUCCESSFUL_SIGNOUT,
   })
   @Get('signout')
-  async signOut(@TokenCookie() token: string, @Res() res: Response) {
+  async signOut(@Req() request: Request, @Res() res: Response) {
     this.requestsService.incrementRequest('/signout', 'GET');
-    this.userService.incrementTotalRequests(token);
-    await this.authService.signOut(token, res);
+    this.userService.incrementTotalRequests(request.cookies.token);
+    await this.authService.signOut(request.cookies.token, res);
     return;
   }
 
