@@ -49,8 +49,8 @@ model ExpiredJwt {
 }
 
 model Requests {
-  id Int @id @default(autoincrement ())
-  method String @db.VarChar(15)
-  endpoint String @db.VarChar(50)
-  total Int @default(0)
+  id       Int      @id @default(autoincrement ()) @unique
+  method   String   @db.VarChar(15)
+  endpoint String   @db.VarChar(50) @unique
+  total    Int      @default(0)
 }
