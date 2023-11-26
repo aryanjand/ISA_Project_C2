@@ -1,10 +1,8 @@
-import { ValidationPipe } from '@nestjs/common';
 import { NestFactory } from '@nestjs/core';
 import { NestExpressApplication } from '@nestjs/platform-express';
 import MongoStore from 'connect-mongo';
 import 'dotenv/config';
 import session from 'express-session';
-import helmet from 'helmet';
 import { AppModule } from './app.module';
 import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
 import cookieParser from 'cookie-parser';

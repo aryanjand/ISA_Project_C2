@@ -8,7 +8,6 @@ import { AuthModule } from './auth/auth.module';
 import { NotFoundExceptionFilter } from './common';
 import { HealthModule } from './health/health.module';
 import { PrismaModule } from './prisma/prisma.module';
-import { CloudinaryModule } from './cloudinary/cloudinary.module';
 import { ModelModule } from './model/model.module';
 import { OpenAiController } from './open-ai/open-ai.controller';
 import { OpenAiService } from './open-ai/open-ai.service';
@@ -30,7 +29,6 @@ import { AdminService } from './admin/admin.service';
     PrismaModule,
     HealthModule,
     AuthModule,
-    CloudinaryModule,
     ModelModule,
     UserModule,
     StoryModule,

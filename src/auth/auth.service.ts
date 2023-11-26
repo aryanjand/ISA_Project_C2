@@ -114,7 +114,6 @@ export class AuthService {
       return;
     } catch (err) {
       if (err.code === 'P2002') {
-        // token already exists
         return;
       }
       throw new InternalServerErrorException(err.message);

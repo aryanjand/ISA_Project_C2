@@ -16,10 +16,9 @@ import { Request } from 'express';
 export class AdminController {
     constructor(private readonly adminService: AdminService) { }
 
-    // ... Other routes and methods
 
     @UseGuards(AuthGuard)
-    @Delete('story/:story_id') // Update the route to accept both userId and storyId
+    @Delete('story/:story_id') 
     @ApiResponse({
         status: 200,
         description: 'Delete a story',

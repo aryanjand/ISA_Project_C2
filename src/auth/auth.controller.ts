@@ -38,14 +38,12 @@ export class AuthController {
     @Res({ passthrough: true }) response: Response,
   ) {
     try {
-      // Call your authentication service to sign in the user
       const result = await this.authService.signIn(dto, response);
       return result;
     } catch (error) {
-      // Handle authentication errors
       console.error('Authentication failed:', error);
-      response.status(401).json({ error: 'Authentication failed.' }); // Set an appropriate HTTP status code
-      return; // Return to exit the function
+      response.status(401).json({ error: 'Authentication failed.' });
+      return;
     }
     return;
   }
@@ -67,18 +65,13 @@ export class AuthController {
     @Res({ passthrough: true }) response: Response,
   ) {
     try {
-      // Call your authentication service to sign in the user
       const result = await this.authService.signUp(dto, response);
       return result;
     } catch (error) {
-      // Handle authentication errors
       console.error('Authentication failed:', error);
-      response.status(401).json({ error: 'Authentication failed.' }); // Set an appropriate HTTP status code
-      return; // Return to exit the function
+      response.status(401).json({ error: 'Authentication failed.' });
+      return; 
     }
-    console.log('After try and catch ');
-    // Return the session data in the response
-    return;
   }
 
   @HttpCode(HttpStatus.OK)
@@ -107,7 +100,6 @@ export class AuthController {
       const result = await this.authService.session(request.cookies.token);
       return result;
     } catch (error) {
-      // Handle the error as needed
       console.error('Error in session endpoint:', error.message);
       return { error: 'An error occurred while processing your request.' };
     }

@@ -15,10 +15,7 @@ export class OpenAiController {
     description: 'Give words to make a story',
   })
   async generateStroy(@Query('Prompt') prompt: string): Promise<{prompt: string}> {
-    // Assuming your service has a method to generate the image
     const response = await this.openaiService.openAiResponse(prompt);
-
-    // You can return the image data or URL, depending on your needs
     return response;
   }
 }
