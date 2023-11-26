@@ -62,7 +62,7 @@ export class AuthService {
       path: '/',
       sameSite: 'none',
       httpOnly: process.env.NODE_ENV === AUTH_MESSAGES.PRODUCTION,
-      secure: process.env.NODE_ENV === AUTH_MESSAGES.PRODUCTION,
+      secure: true,
       maxAge: 1000 * 60 * 60, // 1 hour
     });
     const userBundle = {
@@ -95,7 +95,7 @@ export class AuthService {
           sameSite: 'none',
           path: '/',
           httpOnly: process.env.NODE_ENV == AUTH_MESSAGES.PRODUCTION,
-          secure: process.env.NODE_ENV === AUTH_MESSAGES.PRODUCTION,
+          secure: true,
           maxAge: 1000 * 60 * 60, // 1 hour
         },
       );
@@ -126,7 +126,7 @@ export class AuthService {
         path: '/',
         sameSite: 'none',
         httpOnly: process.env.NODE_ENV === AUTH_MESSAGES.PRODUCTION,
-        secure: process.env.NODE_ENV === AUTH_MESSAGES.PRODUCTION,
+        secure: true,
       });
 
       await this.prisma.expiredJwt.create({
