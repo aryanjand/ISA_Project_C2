@@ -1,20 +1,21 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { IsNotEmpty, IsString } from 'class-validator';
+import { AUTH_MESSAGES } from '../auth.constants';
 
 export class UserDto {
   @ApiProperty({
-    example: 'dummyuser',
+    example: AUTH_MESSAGES.DUMMY_USER,
     required: true,
   })
-  @IsString()
-  @IsNotEmpty()
+  @IsString({ message: AUTH_MESSAGES.USERNAME_REQUIRED })
+  @IsNotEmpty({ message: AUTH_MESSAGES.USERNAME_REQUIRED })
   username: string;
 
   @ApiProperty({
-    example: '1234578910',
+    example: AUTH_MESSAGES.DUMMY_PASSWORD,
     required: true,
   })
-  @IsString()
-  @IsNotEmpty()
+  @IsString({ message: AUTH_MESSAGES.PASSWORD_REQUIRED })
+  @IsNotEmpty({ message: AUTH_MESSAGES.PASSWORD_REQUIRED })
   password: string;
 }
