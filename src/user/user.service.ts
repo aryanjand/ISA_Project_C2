@@ -10,21 +10,6 @@ export class UserService {
   constructor(private prisma: PrismaService, private jwt: JwtService) {
   }
 
-  async getAllUsers(user: User) {
-    try {
-      if (user.user_privilege != 'ADMIN') {
-        throw new ValidationException('Something went wrong');
-      }
-      const users = await this.prisma.user.findMany();
-      return users;
-    } catch (err) {
-      if (err.code === 'P2002') {
-        throw new ValidationException('Credentials taken');
-      }
-      throw new ValidationException('Something went wrong');
-    }
-  }
-
   async updateStory(story_id: number, story_text: string, token: string) {
     if (!token) {
       return false;
