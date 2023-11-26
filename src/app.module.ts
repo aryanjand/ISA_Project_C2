@@ -19,6 +19,7 @@ import { StoryModule } from './story/story.module';
 import { AdminController } from './admin/admin.controller';
 import { AdminModule } from './admin/admin.module';
 import { AdminService } from './admin/admin.service';
+import { RequestService } from './requests/requests.service';
 
 @Module({
   imports: [
@@ -45,6 +46,7 @@ import { AdminService } from './admin/admin.service';
     OpenAiService,
     UserService,
     AdminService,
+    RequestService,
   ],
 })
 export class AppModule {}
