@@ -57,7 +57,6 @@ export class AuthGuard implements CanActivate {
   }
 
   private extractJwtToken(req: Request) {
-
     const token =
       req.cookies[this.config.get('JWT_TOKEN_NAME', process.env.TOKEN_NAME)];
     return token;
