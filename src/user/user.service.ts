@@ -25,6 +25,30 @@ export class UserService {
     }
   }
 
+  async updateStory(story_id: number, story_text: string, token: string) {
+    if (!token) {
+      return false;
+    }
+    try {
+      const {user} = await this.jwt.verifyAsync(token);
+      const story = await this.prisma.story.update({
+        where: {
+          id: story_id,
+          user_id: user.id,
+        },
+        data: {
+          story_text: story_text,
+        },
+      });
+      if (!story) {
+        throw new ValidationException('No story found!');
+      };
+      return true
+    } catch (err) {
+      return false;
+    }
+  }
+
   async getStoryForUser(user: User) {
     try {
       const story = await this.prisma.story.findMany({
