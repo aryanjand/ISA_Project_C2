@@ -11,15 +11,17 @@ export class StoryService {
 
   async getAllStories(token: string) {
     try {
-      const {user} = await this.jwt.verifyAsync(token);
+      const { user } = await this.jwt.verifyAsync(token);
       if (user.user_privilege !== 'ADMIN') {
-        throw new ValidationException(STORY_MESSAGES.SOMETHING_WENT_WRONG_STORY);
+        throw new ValidationException(
+          STORY_MESSAGES.SOMETHING_WENT_WRONG_STORY,
+        );
       }
       const story = await this.prisma.story.findMany();
       return story;
     } catch (err) {
       if (err.name === 'TokenExpiredError') {
-        throw new HttpException('Token Expired', 401)
+        throw new HttpException('Token Expired', 401);
       }
       if (err.code === 'P2002') {
         throw new ValidationException(STORY_MESSAGES.CREDENTIALS_TAKEN_STORY);

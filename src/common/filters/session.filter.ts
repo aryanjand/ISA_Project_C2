@@ -21,7 +21,8 @@ export class SessionExceptionFilter implements ExceptionFilter {
     ) {
       return response.status(exception.getStatus()).json({
         statusCode: exception.getStatus(),
-        message: exception.getResponse()['message'] || FILTER_MESSAGE.UNAUTHORIZED,
+        message:
+          exception.getResponse()['message'] || FILTER_MESSAGE.UNAUTHORIZED,
       });
     }
   }

@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
-import {Requests} from '@prisma/client';
+import { Requests } from '@prisma/client';
 
 @Injectable()
 export class RequestsService {
@@ -8,7 +8,7 @@ export class RequestsService {
 
   async isEndpointExists(endpoint: string, method: string): Promise<boolean> {
     const request = await this.prisma.requests.findUnique({
-      where: {endpoint: endpoint, method: method},
+      where: { endpoint: endpoint, method: method },
     });
     return request !== null;
   }
@@ -16,10 +16,10 @@ export class RequestsService {
   async createEndpoint(endpoint: string, method: string): Promise<boolean> {
     try {
       await this.prisma.requests.create({
-          data: {
-            endpoint: endpoint,
-            method: method
-          }
+        data: {
+          endpoint: endpoint,
+          method: method,
+        },
       });
       return true;
     } catch (err) {
@@ -44,13 +44,13 @@ export class RequestsService {
       await this.prisma.requests.update({
         where: {
           endpoint: endpoint,
-          method: method
+          method: method,
         },
         data: {
           total: {
-            increment: 1
-          }
-        }
+            increment: 1,
+          },
+        },
       });
     } catch (err) {
       return false;
@@ -60,7 +60,7 @@ export class RequestsService {
   async incrementRequest(endpoint: string, method: string): Promise<boolean> {
     try {
       await this.checkEndpoint(endpoint, method);
-      await this.increment(endpoint, method)
+      await this.increment(endpoint, method);
       return true;
     } catch (err) {
       return false;
