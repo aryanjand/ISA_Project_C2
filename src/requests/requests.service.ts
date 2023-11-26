@@ -2,23 +2,23 @@ import { Injectable } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 
 @Injectable()
-export class RequestService {
+export class RequestsService {
   constructor(private prisma: PrismaService) {}
 
   async isEndpointExists(endpoint: string, method: string): Promise<boolean> {
-    const endpointExists = await this.prisma.requests.findUnique({
-      where: { endpoint, method },
+    const request = await this.prisma.requests.findUnique({
+      where: {endpoint: endpoint, method: method},
     });
-    return !!endpointExists;
+    return request !== null;
   }
 
   async createEndpoint(endpoint: string, method: string): Promise<boolean> {
     try {
       await this.prisma.requests.create({
-        data: {
-          endpoint,
-          method,
-        },
+          data: {
+            endpoint: endpoint,
+            method: method
+          }
       });
       return true;
     } catch (err) {
@@ -28,7 +28,8 @@ export class RequestService {
 
   async checkEndpoint(endpoint: string, method: string): Promise<boolean> {
     try {
-      const isExists = this.isEndpointExists(endpoint, method);
+      const isExists = await this.isEndpointExists(endpoint, method);
+      console.log(isExists);
       if (!isExists) {
         await this.createEndpoint(endpoint, method);
       }
@@ -37,17 +38,28 @@ export class RequestService {
     }
   }
 
+  private async increment(endpoint: string, method: string): Promise<boolean> {
+    try {
+      await this.prisma.requests.update({
+        where: {
+          endpoint: endpoint,
+          method: method
+        },
+        data: {
+          total: {
+            increment: 1
+          }
+        }
+      });
+    } catch (err) {
+      return false;
+    }
+  }
+
   async incrementRequest(endpoint: string, method: string): Promise<boolean> {
     try {
       await this.checkEndpoint(endpoint, method);
-      await this.prisma.requests.update({
-        where: { endpoint, method },
-        data: {
-          count: {
-            increment: 1,
-          },
-        },
-      });
+      await this.increment(endpoint, method)
       return true;
     } catch (err) {
       return false;
