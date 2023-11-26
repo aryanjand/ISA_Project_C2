@@ -9,7 +9,6 @@ import { NotFoundExceptionFilter } from './common';
 import { HealthModule } from './health/health.module';
 import { PrismaModule } from './prisma/prisma.module';
 import { ModelModule } from './model/model.module';
-import { OpenAiController } from './open-ai/open-ai.controller';
 import { OpenAiService } from './open-ai/open-ai.service';
 import { UserService } from './user/user.service';
 import { UserController } from './user/user.controller';
@@ -18,7 +17,7 @@ import { StoryModule } from './story/story.module';
 import { AdminController } from './admin/admin.controller';
 import { AdminModule } from './admin/admin.module';
 import { AdminService } from './admin/admin.service';
-import { RequestService } from './requests/requests.service';
+import { RequestsService } from './requests/requests.service';
 
 @Module({
   imports: [
@@ -35,7 +34,7 @@ import { RequestService } from './requests/requests.service';
     StoryModule,
     AdminModule,
   ],
-  controllers: [AppController, OpenAiController, UserController, AdminController],
+  controllers: [AppController, UserController, AdminController],
   providers: [
     {
       provide: 'APP_FILTER',
@@ -44,7 +43,7 @@ import { RequestService } from './requests/requests.service';
     OpenAiService,
     UserService,
     AdminService,
-    RequestService,
+    RequestsService,
   ],
 })
 export class AppModule {}
