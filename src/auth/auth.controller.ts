@@ -46,10 +46,11 @@ export class AuthController {
     try {
       this.requestsService.incrementRequest('/signin', 'POST');
       const result = await this.authService.signIn(dto, response);
-      return result;
+      response.json(result);
+      return;
     } catch (error) {
       console.error(AUTH_MESSAGES.AUTH_FAILED, error);
-      response.status(401).json({ error: AUTH_MESSAGES.AUTHENTICATION_FAILED });
+      response.json({ error: AUTH_MESSAGES.AUTHENTICATION_FAILED });
       return;
     }
   }
@@ -79,7 +80,7 @@ export class AuthController {
       return result;
     } catch (error) {
       console.error(AUTH_MESSAGES.AUTH_FAILED, error);
-      response.status(401).json({ error: AUTH_MESSAGES.AUTHENTICATION_FAILED });
+      response.json({ error: AUTH_MESSAGES.AUTHENTICATION_FAILED });
       return;
     }
   }
@@ -95,26 +96,21 @@ export class AuthController {
     this.requestsService.incrementRequest('/signout', 'GET');
     this.userService.incrementTotalRequests(request.cookies.token);
     await this.authService.signOut(request.cookies.token, res);
+    res.status(200).json({ success: true });
     return;
   }
 
-  @UseGuards(AuthGuard)
   @ApiOperation({
     summary: AUTH_MESSAGES.CHECKING_AUTHENTICATION,
     description: AUTH_MESSAGES.CHECKING_USER_IF_AUTHENTICATION,
   })
   @HttpCode(HttpStatus.OK)
   @Get('session')
-  @Get('session')
   async session(@Req() request: Request) {
-    try {
-      this.requestsService.incrementRequest('/session', 'GET');
-      const result = await this.authService.session(request.cookies.token);
-      this.userService.incrementTotalRequests(request.cookies.token);
-      return result;
-    } catch (error) {
-      console.error(AUTH_MESSAGES.ERROR_IN_SESSION_ENDPOINT, error.message);
-      return { error: AUTH_MESSAGES.ERROR_PROCESSING_REQUEST };
-    }
+    console.log(request.cookies.token);
+    this.requestsService.incrementRequest('/session', 'GET');
+    const result = await this.authService.session(request.cookies.token);
+    this.userService.incrementTotalRequests(request.cookies.token);
+    return result;
   }
 }
