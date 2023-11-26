@@ -1,4 +1,3 @@
-// open-ai.service.ts
 import { Injectable, Global } from '@nestjs/common';
 import OpenAI from 'openai';
 

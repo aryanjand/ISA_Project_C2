@@ -1,8 +1,6 @@
 import {
   Controller,
-  ForbiddenException,
   Get,
-  Session,
   UseGuards,
 } from '@nestjs/common';
 import { ApiForbiddenResponse, ApiResponse, ApiTags} from '@nestjs/swagger';

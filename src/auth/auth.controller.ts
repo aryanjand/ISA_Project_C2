@@ -15,6 +15,7 @@ import { ApiBody, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { TokenCookie } from 'src/common/decorators/token-cookie.decorator';
 import { AuthGuard } from '../common';
 import { Request, Response } from 'express';
+import { AUTH_MESSAGES } from '../auth/auth.constants';
 
 @ApiTags('User Authentication')
 @Controller()
@@ -25,9 +26,9 @@ export class AuthController {
   @ApiOperation({ summary: 'Authenticating User' })
   @ApiResponse({
     status: 201,
-    description: 'User has been successfully Logged-In.',
+    description: AUTH_MESSAGES.SUCCESSFUL_LOGIN,
   })
-  @ApiResponse({ status: 403, description: 'Forbidden.' })
+  @ApiResponse({ status: 403, description: AUTH_MESSAGES.FORBIDDEN })
   @ApiBody({
     type: UserDto,
     description: 'User Object loaded in Session Object',
@@ -38,25 +39,22 @@ export class AuthController {
     @Res({ passthrough: true }) response: Response,
   ) {
     try {
-      // Call your authentication service to sign in the user
       const result = await this.authService.signIn(dto, response);
       return result;
     } catch (error) {
-      // Handle authentication errors
       console.error('Authentication failed:', error);
-      response.status(401).json({ error: 'Authentication failed.' }); // Set an appropriate HTTP status code
-      return; // Return to exit the function
+      response.status(401).json({ error: AUTH_MESSAGES.AUTHENTICATION_FAILED });
+      return;
     }
-    return;
   }
 
   @HttpCode(HttpStatus.CREATED)
   @ApiOperation({ summary: 'Creating a new user' })
   @ApiResponse({
     status: HttpStatus.CREATED,
-    description: 'User has been successfully created.',
+    description: AUTH_MESSAGES.SUCCESSFUL_SIGNUP,
   })
-  @ApiResponse({ status: HttpStatus.FORBIDDEN, description: 'Forbidden.' })
+  @ApiResponse({ status: HttpStatus.FORBIDDEN, description: AUTH_MESSAGES.FORBIDDEN })
   @ApiBody({
     type: UserDto,
     description: 'User Object loaded in Session Object',
@@ -67,25 +65,20 @@ export class AuthController {
     @Res({ passthrough: true }) response: Response,
   ) {
     try {
-      // Call your authentication service to sign in the user
       const result = await this.authService.signUp(dto, response);
       return result;
     } catch (error) {
-      // Handle authentication errors
       console.error('Authentication failed:', error);
-      response.status(401).json({ error: 'Authentication failed.' }); // Set an appropriate HTTP status code
-      return; // Return to exit the function
+      response.status(401).json({ error: AUTH_MESSAGES.AUTHENTICATION_FAILED });
+      return; 
     }
-    console.log('After try and catch ');
-    // Return the session data in the response
-    return;
   }
 
   @HttpCode(HttpStatus.OK)
   @ApiOperation({ summary: 'Signing out a user' })
   @ApiResponse({
     status: HttpStatus.OK,
-    description: 'User has been successfully signed out.',
+    description: AUTH_MESSAGES.SUCCESSFUL_SIGNOUT,
   })
   @Get('signout')
   async signOut(@TokenCookie() token: string, @Res() res: Response) {
@@ -107,9 +100,8 @@ export class AuthController {
       const result = await this.authService.session(request.cookies.token);
       return result;
     } catch (error) {
-      // Handle the error as needed
       console.error('Error in session endpoint:', error.message);
-      return { error: 'An error occurred while processing your request.' };
+      return { error: AUTH_MESSAGES.ERROR_PROCESSING_REQUEST };
     }
   }
 }

@@ -10,8 +10,8 @@ import {
 } from '@nestjs/common';
 import { UserService } from './user.service';
 import { ApiBody, ApiForbiddenResponse, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
-import { AuthGuard, UserSession } from '../common';
-import { Story, User } from '@prisma/client';
+import { AuthGuard } from '../common';
+import { Story, } from '@prisma/client';
 import { StoryDto } from 'src/story/dto';
 import { Request } from 'express';
 import { EditStory } from './dto';
