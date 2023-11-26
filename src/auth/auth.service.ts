@@ -60,8 +60,9 @@ export class AuthService {
     );
     res.cookie(cookieName, token, {
       path: '/',
-      httpOnly: process.env.NODE_ENV === AUTH_MESSAGES.PRODUCTION,
-      secure: process.env.NODE_ENV === AUTH_MESSAGES.PRODUCTION,
+      sameSite: 'none',
+      httpOnly: true,
+      secure: true,
       maxAge: 1000 * 60 * 60, // 1 hour
     });
     const userBundle = {
@@ -91,9 +92,10 @@ export class AuthService {
         ),
         token,
         {
+          sameSite: 'none',
           path: '/',
-          httpOnly: process.env.NODE_ENV == AUTH_MESSAGES.PRODUCTION,
-          secure: process.env.NODE_ENV === AUTH_MESSAGES.PRODUCTION,
+          httpOnly: true,
+          secure: true,
           maxAge: 1000 * 60 * 60, // 1 hour
         },
       );
@@ -122,8 +124,9 @@ export class AuthService {
 
       res.clearCookie(cookieName, {
         path: '/',
-        httpOnly: process.env.NODE_ENV === AUTH_MESSAGES.PRODUCTION,
-        secure: process.env.NODE_ENV === AUTH_MESSAGES.PRODUCTION,
+        sameSite: 'none',
+        httpOnly: true,
+        secure: true,
       });
 
       await this.prisma.expiredJwt.create({
