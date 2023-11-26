@@ -1,6 +1,7 @@
 import { Injectable, Global } from '@nestjs/common';
 import OpenAI from 'openai';
 import { Entity } from 'src/model/types';
+import { OPEN_API_MESSAGES } from './open-ai.constants'; 
 
 @Global()
 @Injectable()
@@ -30,8 +31,8 @@ export class OpenAiService {
       const generatedText = response.choices[0].message.content.trim();
       return {prompt: generatedText};
     } catch (error) {
-      console.error('Error in openAiResponse:', error);
-      throw new Error('Error generating response from OpenAI API');
+      console.error(OPEN_API_MESSAGES.ERROR_OPENAIRESPONSE, error);
+      throw new Error(OPEN_API_MESSAGES.ERROR_GENERATING_RESPONSE);
     }
   }
 }

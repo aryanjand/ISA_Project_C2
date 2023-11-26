@@ -4,6 +4,7 @@ import {
   ExceptionFilter,
   NotFoundException,
 } from '@nestjs/common';
+import { FILTER_MESSAGE } from './filters.constants';
 
 @Catch(NotFoundException)
 export class NotFoundExceptionFilter implements ExceptionFilter {
@@ -12,7 +13,7 @@ export class NotFoundExceptionFilter implements ExceptionFilter {
     const response = ctx.getResponse();
     response.status(404).json({
       statusCode: 404,
-      message: 'Not Found',
+      message: FILTER_MESSAGE.NOT_FOUND,
     });
   }
 }

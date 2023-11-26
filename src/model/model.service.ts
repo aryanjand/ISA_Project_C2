@@ -5,6 +5,8 @@ import { PrismaService } from '../prisma/prisma.service';
 import { Entity } from './types';
 import { JwtService } from '@nestjs/jwt';
 import { User } from '@prisma/client';
+import { MODAL_MESSAGES } from './modal.constants';
+
 
 @Injectable()
 export class ModelService {
@@ -12,8 +14,6 @@ export class ModelService {
 
   async identifyTokens(data: string): Promise<Entity[]> {
     try {
-      console.log('JSON OBJ to the API ', JSON.stringify({ text: data }));
-
       const response = await fetch(
         'https://seahorse-app-pq5ct.ondigitalocean.app/',
         {
@@ -29,12 +29,11 @@ export class ModelService {
 
       if (!response.ok) {
         throw new InternalServerErrorException(
-          'Failed to fetch data from the API',
+          MODAL_MESSAGES.FAILED_TO_FETCH,
         );
       }
 
       const responseData = await response.json();
-      console.log('Response from model line 22 ', responseData);
 
       const entityTypeMap = {
         'B-PER': 'Person',
@@ -108,9 +107,9 @@ export class ModelService {
       return true;
     } catch (err) {
       if (err.code === 'P2002') {
-        throw new ValidationException('Credentials taken');
+        throw new ValidationException(MODAL_MESSAGES.CREDENTIALS_TAKEN_MODAL);
       }
-      throw new ValidationException('Something went wrong');
+      throw new ValidationException(MODAL_MESSAGES.SOMETHING_WENT_WRONG_MODAL);
     }
   }
 }

@@ -5,6 +5,7 @@ import { OpenAiService } from '../open-ai/open-ai.service';
 import {Request} from 'express';
 import { RequestsService } from 'src/requests/requests.service';
 import { UserService } from 'src/user/user.service';
+import { MODAL_MESSAGES } from './modal.constants';
 
 @Controller('model')
 export class ModelController {
@@ -17,9 +18,9 @@ export class ModelController {
 
   @Get('GenerateStory')
   @ApiQuery({
-    name: 'description',
+    name: MODAL_MESSAGES.DESCRIPTION,
     type: String,
-    description: 'Description of the image',
+    description: MODAL_MESSAGES.DESCRIPTION_IMAGE,
   })
   async generateTokens(
     @Req() request: Request,

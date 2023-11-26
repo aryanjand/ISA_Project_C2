@@ -2,6 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { ValidationException } from '../common';
 import { JwtService } from '@nestjs/jwt';
+import { STORY_MESSAGES } from './story.constants';
 
 @Injectable()
 export class StoryService {
@@ -11,15 +12,15 @@ export class StoryService {
     try {
       const {user} = await this.jwt.verifyAsync(token);
       if (user.user_privilege !== 'ADMIN') {
-        throw new ValidationException('Something went wrong');
+        throw new ValidationException(STORY_MESSAGES.SOMETHING_WENT_WRONG_STORY);
       }
       const story = await this.prisma.story.findMany();
       return story;
     } catch (err) {
       if (err.code === 'P2002') {
-        throw new ValidationException('Credentials taken');
+        throw new ValidationException(STORY_MESSAGES.CREDENTIALS_TAKEN_STORY);
       }
-      throw new ValidationException('Something went wrong');
+      throw new ValidationException(STORY_MESSAGES.SOMETHING_WENT_WRONG_STORY);
     }
   }
 }

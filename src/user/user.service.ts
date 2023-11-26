@@ -3,6 +3,7 @@ import { User } from '@prisma/client';
 import { ValidationException } from '../common';
 import { PrismaService } from '../prisma/prisma.service';
 import { JwtService } from '@nestjs/jwt';
+import { USER_MESSAGES } from './user.constants';
 
 
 @Injectable()
@@ -26,7 +27,7 @@ export class UserService {
         },
       });
       if (!story) {
-        throw new ValidationException('No story found!');
+        throw new ValidationException(USER_MESSAGES.NO_STORY_FOUND);
       };
       return true
     } catch (err) {
@@ -44,9 +45,9 @@ export class UserService {
       return story;
     } catch (err) {
       if (err.code === 'P2002') {
-        throw new ValidationException('Credentials taken');
+        throw new ValidationException(USER_MESSAGES.CREDENTIALS_TAKEN_USER);
       }
-      throw new ValidationException('Something went wrong');
+      throw new ValidationException(USER_MESSAGES.SOMETHING_WENT_WRONG_USER);
     }
   }
 

@@ -7,6 +7,7 @@ import {
   ForbiddenException,
 } from '@nestjs/common';
 import { Response } from 'express';
+import { FILTER_MESSAGE } from './filters.constants';
 
 @Catch(HttpException)
 export class SessionExceptionFilter implements ExceptionFilter {
@@ -20,7 +21,7 @@ export class SessionExceptionFilter implements ExceptionFilter {
     ) {
       return response.status(exception.getStatus()).json({
         statusCode: exception.getStatus(),
-        message: exception.getResponse()['message'] || 'Unauthorized access',
+        message: exception.getResponse()['message'] || FILTER_MESSAGE.UNAUTHORIZED,
       });
     }
   }

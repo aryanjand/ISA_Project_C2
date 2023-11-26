@@ -6,10 +6,12 @@ import {
 import { ConfigService } from '@nestjs/config';
 import * as bcrypt from 'bcrypt';
 import { Response } from 'express';
-import { UserSession, ValidationException } from '../common';
+import { ValidationException } from '../common';
 import { PrismaService } from '../prisma/prisma.service';
 import { UserDto } from './dto';
 import { JwtService } from '@nestjs/jwt';
+import { AUTH_MESSAGES } from '../auth/auth.constants';
+
 
 @Injectable()
 export class AuthService {
@@ -36,7 +38,7 @@ export class AuthService {
 
     if (!user) {
       throw new ValidationException(
-        'Invalid credentials',
+        AUTH_MESSAGES.INVALID_CREDENTIALS,
         HttpStatus.UNAUTHORIZED,
       );
     }
@@ -44,7 +46,7 @@ export class AuthService {
     const isValid = bcrypt.compareSync(dto.password, user.password);
     if (!isValid) {
       throw new ValidationException(
-        'Invalid credentials',
+        AUTH_MESSAGES.INVALID_CREDENTIALS,
         HttpStatus.UNAUTHORIZED,
       );
     }
@@ -53,13 +55,9 @@ export class AuthService {
 
     const token = await this.jwt.signAsync({ user });
 
-    console.log('Token User ', token);
-    console.log('User ', this.jwt.decode(token));
-    console.log('Token ', process.env.TOKEN_NAME);
-
-    res.cookie(this.config.get<string>('TOKEN_NAME', process.env.TOKEN_NAME), token, {
-      httpOnly: process.env.NODE_ENV === 'production',
-      secure: process.env.NODE_ENV === 'production',
+    res.cookie(this.config.get<string>(AUTH_MESSAGES.TOKEN_NAME_TEXT, process.env.TOKEN_NAME), token, {
+      httpOnly: process.env.NODE_ENV === AUTH_MESSAGES.PRODUCTION,
+      secure: process.env.NODE_ENV === AUTH_MESSAGES.PRODUCTION,
       maxAge: 1000 * 60 * 60, // 1 hour
     });
     const userBundle = {username: user.username, privilege: user.user_privilege, api_calls: user.api_calls_left};
@@ -79,11 +77,11 @@ export class AuthService {
 
       const token = await this.jwt.signAsync({ user });
       res.cookie(
-        this.config.get<string>('TOKEN_NAME', process.env.TOKEN_NAME),
+        this.config.get<string>(AUTH_MESSAGES.TOKEN_NAME_TEXT, process.env.TOKEN_NAME),
         token,
         {
-          httpOnly: process.env.NODE_ENV === 'production',
-          secure: process.env.NODE_ENV === 'production',
+          httpOnly: process.env.NODE_ENV === AUTH_MESSAGES.PRODUCTION,
+          secure: process.env.NODE_ENV === AUTH_MESSAGES.PRODUCTION,
           maxAge: 1000 * 60 * 60, // 1 hour
         },
       );
@@ -92,9 +90,9 @@ export class AuthService {
       return { success: true, user: userBundle};
     } catch (err) {
       if (err.code === 'P2002') {
-        throw new ValidationException('Credentials taken');
+        throw new ValidationException(AUTH_MESSAGES.CREDENTAILS_TAKEN);
       }
-      throw new ValidationException('Something went wrong');
+      throw new ValidationException(AUTH_MESSAGES.SOMETHING_WENT_WRONG);
     }
   }
 
@@ -107,7 +105,7 @@ export class AuthService {
         },
       });
 
-      res.clearCookie(this.config.get('TOKEN_NAME', process.env.TOKEN_NAME), {
+      res.clearCookie(this.config.get(AUTH_MESSAGES.TOKEN_NAME_TEXT, process.env.TOKEN_NAME), {
         path: '/',
       });
 
