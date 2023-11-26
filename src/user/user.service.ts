@@ -61,4 +61,35 @@ export class UserService {
       return { authenticated: false };
     }
   }
+
+  async getAllUsers () {
+    try {
+      const users = await this.prisma.user.findMany();
+      return users;
+    } catch (err) {
+      return [];
+    }
+  }
+
+  async incrementTotalRequests(token: string) {
+    if (!token) {
+      return false;
+    }
+    try {
+      const {user} = await this.jwt.verifyAsync(token);
+      await this.prisma.user.update({
+        where: {
+          id: user.id,
+        },
+        data: {
+          total_requests: {
+            increment: 1,
+          },
+        },
+      });
+      return true;
+    } catch (err) {
+      return false;
+    }
+  }
 }
