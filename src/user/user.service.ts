@@ -55,11 +55,11 @@ export class UserService {
     }
   }
 
-  async getStoryForUser(user: User) {
+  async getStoryForUser(user: number) {
     try {
       const story = await this.prisma.story.findMany({
         where: {
-          user_id: user.id,
+          user_id: user,
         },
       });
       return story;

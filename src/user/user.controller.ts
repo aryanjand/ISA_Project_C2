@@ -6,10 +6,16 @@ import {
   HttpStatus,
   HttpCode,
   Patch,
-  ForbiddenException
+  ForbiddenException,
 } from '@nestjs/common';
 import { UserService } from './user.service';
-import { ApiBody, ApiForbiddenResponse, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
+import {
+  ApiBody,
+  ApiForbiddenResponse,
+  ApiOperation,
+  ApiResponse,
+  ApiTags,
+} from '@nestjs/swagger';
 import { AuthGuard } from '../common';
 import { Story } from '@prisma/client';
 import { StoryDto } from 'src/story/dto';
@@ -20,7 +26,10 @@ import { RequestsService } from 'src/requests/requests.service';
 @ApiTags('user')
 @Controller('user')
 export class UserController {
-  constructor(private readonly userService: UserService, private readonly requestService: RequestsService) {}
+  constructor(
+    private readonly userService: UserService,
+    private readonly requestService: RequestsService,
+  ) {}
 
   @HttpCode(HttpStatus.OK)
   @ApiOperation({ summary: 'Authenticating User' })
@@ -36,7 +45,11 @@ export class UserController {
   @Patch('editLore')
   async editStory(@Req() request: Request): Promise<boolean> {
     const { story_id, story_text } = request.body;
-    const response = await this.userService.updateStory(story_id, story_text, request.cookies.token);
+    const response = await this.userService.updateStory(
+      story_id,
+      story_text,
+      request.cookies.token,
+    );
     if (!response) {
       throw new ForbiddenException('Forbidden');
     }
@@ -54,10 +67,10 @@ export class UserController {
   })
   @ApiForbiddenResponse({ description: 'Forbidden' })
   async getStoryForUser(@Req() request: Request): Promise<Story[]> {
-   const user = await this.userService.getUserID(request.cookies.token);
-   const response = await this.userService.getStoryForUser(user);
-   this.requestService.incrementRequest('/user/userLores', 'GET');
-   this.userService.incrementTotalRequests(request.cookies.token);
-   return response;
+    const user = await this.userService.getUserID(request.cookies.token);
+    const response = await this.userService.getStoryForUser(user);
+    this.requestService.incrementRequest('/user/userLores', 'GET');
+    this.userService.incrementTotalRequests(request.cookies.token);
+    return response;
   }
 }
