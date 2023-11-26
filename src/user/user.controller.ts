@@ -41,6 +41,7 @@ export class UserController {
       throw new ForbiddenException('Forbidden');
     }
     this.requestService.incrementRequest('/user/editLore', 'PATCH');
+    this.userService.incrementTotalRequests(request.cookies.token);
     return response;
   }
 
@@ -56,6 +57,7 @@ export class UserController {
    const user = await this.userService.getUserID(request.cookies.token);
    const response = await this.userService.getStoryForUser(user);
    this.requestService.incrementRequest('/user/userLores', 'GET');
+   this.userService.incrementTotalRequests(request.cookies.token);
    return response;
   }
 }

@@ -4,6 +4,7 @@ import { ModelService } from './model.service';
 import { OpenAiService } from '../open-ai/open-ai.service';
 import {Request} from 'express';
 import { RequestsService } from 'src/requests/requests.service';
+import { UserService } from 'src/user/user.service';
 
 @Controller('model')
 export class ModelController {
@@ -11,6 +12,7 @@ export class ModelController {
     private readonly modelService: ModelService,
     private readonly openaiService: OpenAiService,
     private readonly requestService: RequestsService,
+    private readonly userService: UserService,
   ) {}
 
   @Get('GenerateStory')
@@ -31,6 +33,7 @@ export class ModelController {
     const generatedText = await this.openaiService.openAiResponse(tokens);
     const success = await this.modelService.storeStory(user, generatedText, description);
     this.requestService.incrementRequest('/model/GenerateStory', 'GET');
+    this.userService.incrementTotalRequests(request.cookies.token);
     if (success) {
       return generatedText;
     }

@@ -17,11 +17,15 @@ import { AuthGuard } from '../common';
 import { Request, Response } from 'express';
 import { AUTH_MESSAGES } from '../auth/auth.constants';
 import { RequestsService } from 'src/requests/requests.service';
+import { UserService } from 'src/user/user.service';
 
 @ApiTags('User Authentication')
 @Controller()
 export class AuthController {
-  constructor(private authService: AuthService, private readonly requestsService: RequestsService) {}
+  constructor(
+    private authService: AuthService, 
+    private readonly requestsService: RequestsService,
+    private readonly userService: UserService) {}
 
   @HttpCode(HttpStatus.OK)
   @ApiOperation({ summary: 'Authenticating User' })
@@ -86,6 +90,7 @@ export class AuthController {
   @Get('signout')
   async signOut(@TokenCookie() token: string, @Res() res: Response) {
     this.requestsService.incrementRequest('/signout', 'GET');
+    this.userService.incrementTotalRequests(token);
     await this.authService.signOut(token, res);
     return;
   }
@@ -102,6 +107,7 @@ export class AuthController {
     try {
       this.requestsService.incrementRequest('/session', 'GET');
       const result = await this.authService.session(request.cookies.token);
+      this.userService.incrementTotalRequests(request.cookies.token);
       return result;
     } catch (error) {
       console.error('Error in session endpoint:', error.message);
